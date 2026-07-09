@@ -1482,7 +1482,11 @@
   }
 
   function getCustomSelectList(picker) {
-    return picker.querySelector(".custom-select-list, .quiz-answer-picker-list");
+    var list = picker.querySelector(".custom-select-list, .quiz-answer-picker-list");
+    if (!list && picker._portaledList) {
+      return picker._portaledList;
+    }
+    return list;
   }
 
   function getCustomSelectTrigger(picker) {
@@ -1606,6 +1610,10 @@
 
     if (!list.dataset.portaled && list.parentNode !== document.body) {
       list._pickerParent = list.parentNode;
+      list._pickerOwner = trigger.closest(".quiz-answer-picker");
+      if (list._pickerOwner) {
+        list._pickerOwner._portaledList = list;
+      }
       document.body.appendChild(list);
       list.dataset.portaled = "true";
     }
@@ -1659,6 +1667,10 @@
       list._pickerParent.appendChild(list);
       delete list.dataset.portaled;
       delete list._pickerParent;
+    }
+    if (list._pickerOwner) {
+      delete list._pickerOwner._portaledList;
+      delete list._pickerOwner;
     }
   }
 
@@ -1739,6 +1751,7 @@
         return;
       }
 
+      event.stopPropagation();
       select.value = target.dataset.value;
       select.dispatchEvent(new Event("change", { bubbles: true }));
       syncCustomSelectTrigger(select, trigger, displayMode);
