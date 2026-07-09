@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>산수</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="page">
+    <div class="phone-viewport" id="phone-viewport">
+    <main class="phone" id="screen-1">
+      <header class="header">
+        <div class="greeting">
+          <span class="greeting-line1">제인아~</span>
+          <span class="greeting-line2">산수하자~</span>
+        </div>
+        <span class="screen-badge" aria-label="1번 화면">①</span>
+      </header>
+
+      <section class="hero" aria-label="캐릭터와 산수 기호">
+        <div class="hero-frame">
+          <span class="symbol symbol-plus" aria-hidden="true"></span>
+          <span class="symbol symbol-minus" aria-hidden="true"></span>
+          <span class="symbol symbol-multiply" aria-hidden="true"></span>
+          <span class="symbol symbol-divide" aria-hidden="true"></span>
+          <img
+            class="character"
+            src="images/character.png"
+            alt="세라 캐릭터"
+          >
+        </div>
+      </section>
+
+      <form class="login-form" id="login-form" novalidate>
+        <label class="field">
+          <span class="field-label">이름</span>
+          <span class="field-divider" aria-hidden="true"></span>
+          <input type="text" name="name" autocomplete="name">
+        </label>
+        <label class="field">
+          <span class="field-label">비밀번호</span>
+          <span class="field-divider" aria-hidden="true"></span>
+          <input type="password" name="password" autocomplete="current-password">
+        </label>
+      </form>
+
+      <p class="signup-link">
+        <a href="#" id="signup-link">새로 가입</a>
+        <span class="signup-divider" aria-hidden="true">|</span>
+        <a href="#" id="login-link">로그인</a>
+      </p>
+    </main>
+    <main class="phone phone--hidden" id="screen-2" hidden>
+      <header class="header header--badge-only">
+        <span class="header-spacer" aria-hidden="true"></span>
+        <span class="screen-badge" aria-label="2번 화면">②</span>
+      </header>
+
+      <nav class="menu-list" aria-label="메인 메뉴">
+        <button class="menu-item" type="button" id="menu-new">
+          <span class="menu-text">
+            <span class="menu-num">1.</span>
+            <span class="menu-label">새로운 문제</span>
+          </span>
+          <span class="menu-thumb">
+            <img
+              class="menu-img menu-img--1"
+              src="https://i.ibb.co/zHm0j39H/5.png"
+              alt=""
+            >
+          </span>
+        </button>
+        <button class="menu-item" type="button" id="menu-wrong">
+          <span class="menu-text">
+            <span class="menu-num">2.</span>
+            <span class="menu-label">틀렸던 문제</span>
+          </span>
+          <span class="menu-thumb">
+            <img
+              class="menu-img menu-img--2"
+              src="https://i.ibb.co/cp67G4F/4.png"
+              alt=""
+            >
+          </span>
+        </button>
+        <button class="menu-item" type="button" id="menu-stats">
+          <span class="menu-text">
+            <span class="menu-num">3.</span>
+            <span class="menu-label">통계</span>
+          </span>
+          <span class="menu-thumb">
+            <img
+              class="menu-img menu-img--3"
+              src="https://i.ibb.co/Kc4QvnKn/3.png"
+              alt=""
+            >
+          </span>
+        </button>
+      </nav>
+
+      <p class="exit-link" id="screen-2-exit">
+        <button type="button" id="exit-btn">나가기</button>
+        <span class="signup-divider screen-2-admin-only" id="screen-2-admin-divider" hidden aria-hidden="true">/</span>
+        <button type="button" class="screen-2-admin-only" id="admin-btn" hidden>관리자</button>
+      </p>
+    </main>
+    <main class="phone phone--hidden" id="screen-stats" hidden>
+      <header class="header header--badge-only">
+        <span class="header-spacer" aria-hidden="true"></span>
+        <span class="screen-badge" aria-label="15번 화면">⑮</span>
+      </header>
+
+      <div class="stats-filters" aria-label="통계 필터">
+        <label class="stats-filter">
+          <select id="stats-year" class="stats-select"></select>
+        </label>
+        <label class="stats-filter">
+          <select id="stats-month" class="stats-select">
+            <option value="all">전체</option>
+            <option value="1">1월</option>
+            <option value="2">2월</option>
+            <option value="3">3월</option>
+            <option value="4">4월</option>
+            <option value="5">5월</option>
+            <option value="6">6월</option>
+            <option value="7">7월</option>
+            <option value="8">8월</option>
+            <option value="9">9월</option>
+            <option value="10">10월</option>
+            <option value="11">11월</option>
+            <option value="12">12월</option>
+          </select>
+        </label>
+        <label class="stats-filter">
+          <select id="stats-op" class="stats-select">
+            <option value="screen-add">덧셈</option>
+            <option value="screen-subtract">뺄셈</option>
+            <option value="screen-multiply">곱셈</option>
+            <option value="screen-divide">나눗셈</option>
+          </select>
+        </label>
+        <label class="stats-filter">
+          <select id="stats-digits" class="stats-select">
+            <option value="all">전체</option>
+            <option value="1">1자리</option>
+            <option value="2">2자리</option>
+            <option value="3">3자리</option>
+            <option value="4" selected>4자리</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="stats-chart-wrap" aria-hidden="true">
+        <div class="stats-chart-y">
+          <span>50</span>
+          <span>40</span>
+          <span>30</span>
+          <span>20</span>
+          <span>10</span>
+          <span>0</span>
+        </div>
+        <div class="stats-chart-main">
+          <div class="stats-chart-bars" id="stats-chart-bars"></div>
+          <div class="stats-chart-x" id="stats-chart-x"></div>
+        </div>
+      </div>
+
+      <div class="stats-table-wrap">
+        <table class="stats-table">
+          <thead>
+            <tr>
+              <th scope="col"></th>
+              <th scope="col">전체 문제</th>
+              <th scope="col">맞춘 문제</th>
+              <th scope="col">정답률</th>
+            </tr>
+          </thead>
+          <tbody id="stats-table-body"></tbody>
+        </table>
+      </div>
+
+      <p class="difficulty-exit stats-exit">
+        <button type="button" class="exit-to-login-btn">나가기</button>
+        <span class="signup-divider">/</span>
+        <button type="button" class="exit-to-home-btn">처음화면</button>
+      </p>
+    </main>
+    <main class="phone phone--hidden" id="screen-admin" hidden>
+      <header class="header header--badge-only">
+        <span class="header-spacer" aria-hidden="true"></span>
+        <span class="screen-badge" aria-label="16번 화면">⑯</span>
+      </header>
+
+      <h1 class="admin-title">가입 친구들</h1>
+
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th scope="col">No.</th>
+              <th scope="col">이름</th>
+              <th scope="col">비밀번호</th>
+              <th scope="col">삭제</th>
+            </tr>
+          </thead>
+          <tbody id="admin-table-body"></tbody>
+        </table>
+      </div>
+
+      <p class="exit-link admin-exit">
+        <button type="button" id="admin-exit-btn">나가기</button>
+        <span class="signup-divider">/</span>
+        <button type="button" id="admin-save-btn">저장</button>
+      </p>
+    </main>
+    <main class="phone phone--hidden op-screen" id="screen-pick" hidden>
+      <header class="header header--badge-only">
+        <span class="header-spacer" aria-hidden="true"></span>
+        <span class="screen-badge" aria-label="4번 화면">④</span>
+      </header>
+
+      <h1 class="pick-title">뭐 할까?</h1>
+
+      <div class="op-stage">
+        <nav class="pick-grid" aria-label="연산 선택">
+          <button class="pick-item" type="button" id="pick-plus">
+            <img
+              class="pick-img"
+              src="https://i.ibb.co/v6P2Vm9j/image.png"
+              alt="덧셈"
+            >
+          </button>
+          <button class="pick-item" type="button" id="pick-minus">
+            <img
+              class="pick-img"
+              src="https://i.ibb.co/xSS1mRYK/image.png"
+              alt="뺄셈"
+            >
+          </button>
+          <button class="pick-item" type="button" id="pick-multiply">
+            <img
+              class="pick-img"
+              src="https://i.ibb.co/cS4Bj4rM/image.png"
+              alt="곱셈"
+            >
+          </button>
+          <button class="pick-item" type="button" id="pick-divide">
+            <img
+              class="pick-img"
+              src="https://i.ibb.co/XkK1mjgM/image.png"
+              alt="나눗셈"
+            >
+          </button>
+        </nav>
+      </div>
+
+      <p class="difficulty-exit">
+        <button type="button" class="exit-to-login-btn">나가기</button>
+        <span class="signup-divider">/</span>
+        <button type="button" class="exit-to-home-btn">처음화면</button>
+      </p>
+    </main>
+    <main class="phone phone--hidden op-screen" id="screen-add" hidden>
+      <header class="header header--badge-only">
+        <span class="header-spacer" aria-hidden="true"></span>
+        <span class="screen-badge" aria-label="5번 화면">⑤</span>
+      </header>
+
+      <h1 class="pick-title">덧셈</h1>
+
+      <div class="op-stage">
+        <nav class="pick-grid" aria-label="연산 선택">
+          <button class="pick-item" type="button" data-op-screen="screen-add">
+            <img
+              class="pick-img"
+              src="https://i.ibb.co/qYQ06W3T/image.png"
+              alt="덧셈"
+            >
+          </button>
+          <button class="pick-item" type="button" data-op-screen="screen-subtract">
+            <img
+              class="pick-img"
+              src="https://i.ibb.co/xSS1mRYK/image.png"
+              alt="뺄셈"
+            >
+          </button>
+          <button class="pick-item" type="button" data-op-screen="screen-multiply">
+            <img
+              class="pick-img"
+              src="https://i.ibb.co/cS4Bj4rM/image.png"
+              alt="곱셈"
+            >
+          </button>
+          <button class="pick-item" type="button" data-op-screen="screen-divide">
+            <img
+              class="pick-img"
+              src="https://i.ibb.co/XkK1mjgM/image.png"
+              alt="나눗셈"
+            >
+          </button>
+        </nav>
+        <button class="go-btn" type="button" id="add-go-btn">GO !</button>
+      </div>
+
+      <p class="difficulty-exit">
+        <button type="button" class="exit-to-login-btn">나가기</button>
+        <span class="signup-divider">/</span>
+        <button type="button" class="exit-to-home-btn">처음화면</button>
+      </p>
+    </main>
+    <main class="phone phone--hidden op-screen" id="screen-subtract" hidden>
+      <header class="header header--badge-only">
+        <span class="header-spacer" aria-hidden="true"></span>
+        <span class="screen-badge" aria-label="6번 화면">⑥</span>
+      </header>
+
+      <h1 class="pick-title">뺄셈</h1>
+
+      <div class="op-stage">
+        <nav class="pick-grid" aria-label="연산 선택">
+          <button class="pick-item" type="button" data-op-screen="screen-add">
+            <img
+              class="pick-img"
+              src="https://i.ibb.co/v6P2Vm9j/image.png"
+              alt="덧셈"
+            >
+          </button>
+          <button class="pick-item" type="button" data-op-screen="screen-subtract">
+            <img
+              class="pick-img"
+              src="https://i.ibb.co/9mgD8pS7/image.png"
+              alt="뺄셈"
+            >
+          </button>
+          <button class="pick-item" type="button" data-op-screen="screen-multiply">
+            <img
+              class="pick-img"
+              src="https://i.ibb.co/cS4Bj4rM/image.png"
+              alt="곱셈"
+            >
+          </button>
+          <button class="pick-item" type="button" data-op-screen="screen-divide">
+            <img
+              class="pick-img"
+              src="https://i.ibb.co/XkK1mjgM/image.png"
+              alt="나눗셈"
+            >
+          </button>
+        </nav>
+        <button class="go-btn go-btn--yellow" type="button" id="subtract-go-btn">GO !</button>
+      </div>
+
+      <p class="difficulty-exit">
+        <button type="button" class="exit-to-login-btn">나가기</button>
+        <span class="signup-divider">/</span>
+        <button type="button" class="exit-to-home-btn">처음화면</button>
+      </p>
+    </main>
+    <main class="phone phone--hidden op-screen" id="screen-multiply" hidden>
+      <header class="header header--badge-only">
+        <span class="header-spacer" aria-hidden="true"></span>
+        <span class="screen-badge" aria-label="7번 화면">⑦</span>
+      </header>
+
+      <h1 class="pick-title">곱셈</h1>
+
+      <div class="op-stage">
+        <nav class="pick-grid" aria-label="연산 선택">
+          <button class="pick-item" type="button" data-op-screen="screen-add">
+            <img
+              class="pick-img"
+              src="https://i.ibb.co/v6P2Vm9j/image.png"
+              alt="덧셈"
+            >
+          </button>
+          <button class="pick-item" type="button" data-op-screen="screen-subtract">
+            <img
+              class="pick-img"
+              src="https://i.ibb.co/xSS1mRYK/image.png"
+              alt="뺄셈"
+            >
+          </button>
+          <button class="pick-item" type="button" data-op-screen="screen-multiply">
+            <img
+              class="pick-img"
+              src="https://i.ibb.co/NdGcYndr/image.png"
+              alt="곱셈"
+            >
+          </button>
+          <button class="pick-item" type="button" data-op-screen="screen-divide">
+            <img
+              class="pick-img"
+              src="https://i.ibb.co/XkK1mjgM/image.png"
+              alt="나눗셈"
+            >
+          </button>
+        </nav>
+        <button class="go-btn go-btn--green" type="button" id="multiply-go-btn">GO !</button>
+      </div>
+
+      <p class="difficulty-exit">
+        <button type="button" class="exit-to-login-btn">나가기</button>
+        <span class="signup-divider">/</span>
+        <button type="button" class="exit-to-home-btn">처음화면</button>
+      </p>
+    </main>
+    <main class="phone phone--hidden op-screen" id="screen-divide" hidden>
+      <header class="header header--badge-only">
+        <span class="header-spacer" aria-hidden="true"></span>
+        <span class="screen-badge" aria-label="8번 화면">⑧</span>
+      </header>
+
+      <h1 class="pick-title">나눗셈</h1>
+
+      <div class="op-stage">
+        <nav class="pick-grid" aria-label="연산 선택">
+          <button class="pick-item" type="button" data-op-screen="screen-add">
+            <img
+              class="pick-img"
+              src="https://i.ibb.co/v6P2Vm9j/image.png"
+              alt="덧셈"
+            >
+          </button>
+          <button class="pick-item" type="button" data-op-screen="screen-subtract">
+            <img
+              class="pick-img"
+              src="https://i.ibb.co/xSS1mRYK/image.png"
+              alt="뺄셈"
+            >
+          </button>
+          <button class="pick-item" type="button" data-op-screen="screen-multiply">
+            <img
+              class="pick-img"
+              src="https://i.ibb.co/cS4Bj4rM/image.png"
+              alt="곱셈"
+            >
+          </button>
+          <button class="pick-item" type="button" data-op-screen="screen-divide">
+            <img
+              class="pick-img"
+              src="https://i.ibb.co/LDZKNNLF/image.png"
+              alt="나눗셈"
+            >
+          </button>
+        </nav>
+        <button class="go-btn go-btn--blue" type="button" id="divide-go-btn">GO !</button>
+      </div>
+
+      <p class="difficulty-exit">
+        <button type="button" class="exit-to-login-btn">나가기</button>
+        <span class="signup-divider">/</span>
+        <button type="button" class="exit-to-home-btn">처음화면</button>
+      </p>
+    </main>
+    <main class="phone phone--hidden op-screen" id="screen-difficulty" hidden>
+      <header class="header header--badge-only">
+        <span class="header-spacer" aria-hidden="true"></span>
+        <span class="screen-badge" aria-label="9번 화면">⑨</span>
+      </header>
+
+      <h1 class="pick-title">어려움 정도</h1>
+
+      <div class="op-stage">
+        <nav class="pick-grid" aria-label="어려움 선택">
+          <button class="pick-item" type="button" data-difficulty="1">
+            <img
+              class="pick-img"
+              src="https://i.ibb.co/FqKSwL5V/1-1.png"
+              alt="1자리"
+            >
+          </button>
+          <button class="pick-item" type="button" data-difficulty="2">
+            <img
+              class="pick-img"
+              src="https://i.ibb.co/fYfCJnw5/1-2.png"
+              alt="2자리"
+            >
+          </button>
+          <button class="pick-item" type="button" data-difficulty="3">
+            <img
+              class="pick-img"
+              src="https://i.ibb.co/vbP40v3/1-3.png"
+              alt="3자리"
+            >
+          </button>
+          <button class="pick-item" type="button" data-difficulty="4">
+            <img
+              class="pick-img"
+              src="https://i.ibb.co/SDdSzJyP/1-4.png"
+              alt="4자리"
+            >
+          </button>
+        </nav>
+      </div>
+
+      <p class="difficulty-exit">
+        <button type="button" class="exit-to-login-btn">나가기</button>
+        <span class="signup-divider">/</span>
+        <button type="button" class="exit-to-home-btn">처음화면</button>
+      </p>
+    </main>
+    <main class="phone phone--hidden op-screen" id="screen-diff-1" hidden>
+      <header class="header header--badge-only">
+        <span class="header-spacer" aria-hidden="true"></span>
+        <span class="screen-badge" aria-label="10번 화면">⑩</span>
+      </header>
+
+      <h1 class="pick-title">1자리</h1>
+
+      <div class="op-stage">
+        <nav class="pick-grid" aria-label="어려움 선택">
+          <button class="pick-item" type="button" data-diff-screen="screen-diff-1">
+            <img class="pick-img" src="https://i.ibb.co/dwr9tbdF/1-1.png" alt="1자리">
+          </button>
+          <button class="pick-item" type="button" data-diff-screen="screen-diff-2">
+            <img class="pick-img" src="https://i.ibb.co/fYfCJnw5/1-2.png" alt="2자리">
+          </button>
+          <button class="pick-item" type="button" data-diff-screen="screen-diff-3">
+            <img class="pick-img" src="https://i.ibb.co/vbP40v3/1-3.png" alt="3자리">
+          </button>
+          <button class="pick-item" type="button" data-diff-screen="screen-diff-4">
+            <img class="pick-img" src="https://i.ibb.co/SDdSzJyP/1-4.png" alt="4자리">
+          </button>
+        </nav>
+        <button class="go-btn go-btn--lavender" type="button">GO !</button>
+      </div>
+
+      <p class="difficulty-exit">
+        <button type="button" class="exit-to-login-btn">나가기</button>
+        <span class="signup-divider">/</span>
+        <button type="button" class="exit-to-home-btn">처음화면</button>
+      </p>
+    </main>
+    <main class="phone phone--hidden op-screen" id="screen-diff-2" hidden>
+      <header class="header header--badge-only">
+        <span class="header-spacer" aria-hidden="true"></span>
+        <span class="screen-badge" aria-label="11번 화면">⑪</span>
+      </header>
+
+      <h1 class="pick-title">2자리</h1>
+
+      <div class="op-stage">
+        <nav class="pick-grid" aria-label="어려움 선택">
+          <button class="pick-item" type="button" data-diff-screen="screen-diff-1">
+            <img class="pick-img" src="https://i.ibb.co/FqKSwL5V/1-1.png" alt="1자리">
+          </button>
+          <button class="pick-item" type="button" data-diff-screen="screen-diff-2">
+            <img class="pick-img" src="https://i.ibb.co/1YM8KR3b/1-2.png" alt="2자리">
+          </button>
+          <button class="pick-item" type="button" data-diff-screen="screen-diff-3">
+            <img class="pick-img" src="https://i.ibb.co/vbP40v3/1-3.png" alt="3자리">
+          </button>
+          <button class="pick-item" type="button" data-diff-screen="screen-diff-4">
+            <img class="pick-img" src="https://i.ibb.co/SDdSzJyP/1-4.png" alt="4자리">
+          </button>
+        </nav>
+        <button class="go-btn go-btn--lavender" type="button">GO !</button>
+      </div>
+
+      <p class="difficulty-exit">
+        <button type="button" class="exit-to-login-btn">나가기</button>
+        <span class="signup-divider">/</span>
+        <button type="button" class="exit-to-home-btn">처음화면</button>
+      </p>
+    </main>
+    <main class="phone phone--hidden op-screen" id="screen-diff-3" hidden>
+      <header class="header header--badge-only">
+        <span class="header-spacer" aria-hidden="true"></span>
+        <span class="screen-badge" aria-label="12번 화면">⑫</span>
+      </header>
+
+      <h1 class="pick-title">3자리</h1>
+
+      <div class="op-stage">
+        <nav class="pick-grid" aria-label="어려움 선택">
+          <button class="pick-item" type="button" data-diff-screen="screen-diff-1">
+            <img class="pick-img" src="https://i.ibb.co/FqKSwL5V/1-1.png" alt="1자리">
+          </button>
+          <button class="pick-item" type="button" data-diff-screen="screen-diff-2">
+            <img class="pick-img" src="https://i.ibb.co/fYfCJnw5/1-2.png" alt="2자리">
+          </button>
+          <button class="pick-item" type="button" data-diff-screen="screen-diff-3">
+            <img class="pick-img" src="https://i.ibb.co/PsZyv9h4/1-3.png" alt="3자리">
+          </button>
+          <button class="pick-item" type="button" data-diff-screen="screen-diff-4">
+            <img class="pick-img" src="https://i.ibb.co/SDdSzJyP/1-4.png" alt="4자리">
+          </button>
+        </nav>
+        <button class="go-btn go-btn--lavender" type="button">GO !</button>
+      </div>
+
+      <p class="difficulty-exit">
+        <button type="button" class="exit-to-login-btn">나가기</button>
+        <span class="signup-divider">/</span>
+        <button type="button" class="exit-to-home-btn">처음화면</button>
+      </p>
+    </main>
+    <main class="phone phone--hidden op-screen" id="screen-diff-4" hidden>
+      <header class="header header--badge-only">
+        <span class="header-spacer" aria-hidden="true"></span>
+        <span class="screen-badge" aria-label="13번 화면">⑬</span>
+      </header>
+
+      <h1 class="pick-title">4자리</h1>
+
+      <div class="op-stage">
+        <nav class="pick-grid" aria-label="어려움 선택">
+          <button class="pick-item" type="button" data-diff-screen="screen-diff-1">
+            <img class="pick-img" src="https://i.ibb.co/FqKSwL5V/1-1.png" alt="1자리">
+          </button>
+          <button class="pick-item" type="button" data-diff-screen="screen-diff-2">
+            <img class="pick-img" src="https://i.ibb.co/fYfCJnw5/1-2.png" alt="2자리">
+          </button>
+          <button class="pick-item" type="button" data-diff-screen="screen-diff-3">
+            <img class="pick-img" src="https://i.ibb.co/vbP40v3/1-3.png" alt="3자리">
+          </button>
+          <button class="pick-item" type="button" data-diff-screen="screen-diff-4">
+            <img class="pick-img" src="https://i.ibb.co/YBvkdHdQ/1-4.png" alt="4자리">
+          </button>
+        </nav>
+        <button class="go-btn go-btn--lavender" type="button">GO !</button>
+      </div>
+
+      <p class="difficulty-exit">
+        <button type="button" class="exit-to-login-btn">나가기</button>
+        <span class="signup-divider">/</span>
+        <button type="button" class="exit-to-home-btn">처음화면</button>
+      </p>
+    </main>
+    <main class="phone phone--hidden" id="screen-quiz" hidden>
+      <header class="quiz-header">
+        <img
+          class="quiz-char"
+          id="quiz-char"
+          src="https://i.ibb.co/qYQ06W3T/image.png"
+          alt=""
+        >
+        <div class="quiz-meta">
+          <span class="quiz-no" id="quiz-no">NO.01</span>
+          <h1 class="quiz-title" id="quiz-title">덧셈 3자리</h1>
+        </div>
+        <span class="screen-badge" aria-label="14번 화면">⑭</span>
+      </header>
+
+      <div class="quiz-body">
+        <img
+          class="quiz-badge-img quiz-badge-img--fighting"
+          src="https://i.ibb.co/FLGPW7C5/image.png"
+          alt="화이팅"
+        >
+
+        <div class="quiz-problem">
+          <div class="quiz-grid" id="quiz-problem-grid"></div>
+        </div>
+
+        <button class="quiz-submit" type="button" id="quiz-submit-btn">제출</button>
+      </div>
+
+      <p class="difficulty-exit">
+        <button type="button" class="exit-to-login-btn">나가기</button>
+        <span class="signup-divider">/</span>
+        <button type="button" class="exit-to-home-btn">처음화면</button>
+      </p>
+    </main>
+    <main class="phone phone--hidden" id="screen-quiz-wrong" hidden>
+      <header class="quiz-header">
+        <img
+          class="quiz-char"
+          id="quiz-wrong-char"
+          src="https://i.ibb.co/qYQ06W3T/image.png"
+          alt=""
+        >
+        <div class="quiz-meta">
+          <span class="quiz-no" id="quiz-wrong-no">NO.01</span>
+          <h1 class="quiz-title" id="quiz-wrong-title">덧셈 3자리</h1>
+        </div>
+        <span class="screen-badge" aria-label="15번 화면">⑮</span>
+      </header>
+
+      <div class="quiz-body">
+        <img
+          class="quiz-badge-img quiz-badge-img--retry"
+          src="https://i.ibb.co/mrzhsPyy/image.png"
+          alt="다시 해보자"
+        >
+
+        <div class="quiz-problem">
+          <div class="quiz-grid" id="quiz-wrong-grid"></div>
+        </div>
+
+        <button class="quiz-submit quiz-submit--retry" type="button" id="quiz-retry-submit-btn">제출</button>
+      </div>
+
+      <p class="difficulty-exit">
+        <button type="button" class="exit-to-login-btn">나가기</button>
+        <span class="signup-divider">/</span>
+        <button type="button" class="exit-to-home-btn">처음화면</button>
+      </p>
+    </main>
+    <main class="phone phone--hidden" id="screen-quiz-correct" hidden>
+      <header class="quiz-header">
+        <img
+          class="quiz-char"
+          id="quiz-correct-char"
+          src="https://i.ibb.co/qYQ06W3T/image.png"
+          alt=""
+        >
+        <div class="quiz-meta">
+          <span class="quiz-no" id="quiz-correct-no">NO.01</span>
+          <h1 class="quiz-title" id="quiz-correct-title">덧셈 3자리</h1>
+        </div>
+        <span class="screen-badge" aria-label="16번 화면">⑯</span>
+      </header>
+
+      <div class="quiz-body">
+        <img
+          class="quiz-badge-img quiz-badge-img--good"
+          src="https://i.ibb.co/LdLKjWRR/good.png"
+          alt="GOOD"
+        >
+
+        <div class="quiz-problem">
+          <div class="quiz-grid" id="quiz-correct-grid"></div>
+        </div>
+
+        <button class="quiz-submit" type="button" id="quiz-next-btn">다음</button>
+      </div>
+
+      <p class="difficulty-exit">
+        <button type="button" class="exit-to-login-btn">나가기</button>
+        <span class="signup-divider">/</span>
+        <button type="button" class="exit-to-home-btn">처음화면</button>
+      </p>
+    </main>
+    <main class="phone phone--hidden" id="screen-signup" hidden>
+      <header class="header header--badge-only">
+        <span class="header-spacer" aria-hidden="true"></span>
+        <span class="screen-badge" aria-label="3번 화면">③</span>
+      </header>
+      <h1 class="signup-title">새로 가입</h1>
+
+      <form class="signup-form" id="signup-form" novalidate>
+        <div class="signup-fields">
+        <div class="signup-row">
+          <img
+            class="signup-icon"
+            src="images/signup-plus.png"
+            alt=""
+            onerror="this.onerror=null;this.src='https://i.ibb.co/wF2Vz6Dz/6.png';"
+          >
+          <div class="signup-field">
+            <label class="signup-label" for="signup-name">이름</label>
+            <input class="signup-input" type="text" id="signup-name" name="name" autocomplete="name">
+          </div>
+        </div>
+
+        <div class="signup-row">
+          <img
+            class="signup-icon"
+            src="images/signup-minus.png"
+            alt=""
+            onerror="this.onerror=null;this.src='https://i.ibb.co/v4FTd2ZC/7.png';"
+          >
+          <div class="signup-field">
+            <label class="signup-label" for="signup-password">비밀번호</label>
+            <input class="signup-input" type="password" id="signup-password" name="password" autocomplete="new-password">
+          </div>
+        </div>
+
+        <div class="signup-row">
+          <img
+            class="signup-icon"
+            src="images/signup-multiply.png"
+            alt=""
+            onerror="this.onerror=null;this.src='https://i.ibb.co/WpkpBmwL/8.png';"
+          >
+          <div class="signup-field">
+            <label class="signup-label" for="signup-age">나이</label>
+            <div class="signup-input signup-input--age" id="signup-age">
+              <span class="age-display" id="age-display">1살</span>
+              <div class="age-stepper">
+                <button type="button" class="age-up" id="age-up" aria-label="나이 증가">▲</button>
+                <button type="button" class="age-down" id="age-down" aria-label="나이 감소">▼</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="signup-row">
+          <img
+            class="signup-icon"
+            src="images/signup-divide.png"
+            alt=""
+            onerror="this.onerror=null;this.src='https://i.ibb.co/KjFPD1CW/9.png';"
+          >
+          <div class="signup-field">
+            <label class="signup-label" for="signup-motto">각오!</label>
+            <input class="signup-input" type="text" id="signup-motto" name="motto">
+          </div>
+        </div>
+        </div>
+
+        <div class="signup-actions">
+          <button type="submit" class="signup-submit">등록</button>
+        </div>
+      </form>
+
+      <p class="exit-link">
+        <button type="button" id="signup-exit-btn">나가기</button>
+      </p>
+    </main>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
