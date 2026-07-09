@@ -1,10 +1,11 @@
 @font-face {
   font-family: "양재백두체B";
   src:
+    url("fonts/양재백두체B.ttf") format("truetype"),
     local("양재백두체B"),
     local("Yj-BACDOO-Bold"),
-    url("fonts/양재백두체B.ttf") format("truetype");
-  font-weight: 700;
+    local("YDOO08");
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
@@ -30,7 +31,7 @@
   --phone-height: 420px;
   --phone-scale: 1;
   --phone-lift: 0px;
-  --main-font: "양재백두체B", sans-serif;
+  --main-font: "양재백두체B", "Yj-BACDOO-Bold", sans-serif;
 }
 
 html {
@@ -61,8 +62,11 @@ body {
 button,
 input,
 textarea,
-select {
+select,
+.phone,
+.phone * {
   font-family: var(--main-font);
+  font-synthesis: none;
 }
 
 .page {
