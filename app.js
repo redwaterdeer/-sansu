@@ -120,7 +120,7 @@
     setTimeout(function () {
       resetMenuTransition();
       callback();
-    }, 1000);
+    }, 500);
   }
 
   function updateScreen2Exit() {
@@ -305,9 +305,34 @@
     document.documentElement.style.setProperty("--phone-lift", Math.max(0, lift) + "px");
   }
 
+  function getAvailableViewport() {
+    var vv = window.visualViewport;
+    var width = window.innerWidth;
+    var height = window.innerHeight;
+    var clientW = document.documentElement.clientWidth;
+    var clientH = document.documentElement.clientHeight;
+
+    if (vv) {
+      width = Math.min(width, vv.width);
+      height = Math.min(height, vv.height);
+    }
+    if (clientW > 0) {
+      width = Math.min(width, clientW);
+    }
+    if (clientH > 0) {
+      height = Math.min(height, clientH);
+    }
+
+    return {
+      width: width,
+      height: height
+    };
+  }
+
   function updatePhoneScale() {
-    var viewport = window.visualViewport;
-    var availableW = viewport ? viewport.width : window.innerWidth;
+    var viewport = getAvailableViewport();
+    var safeInset = 2;
+    var scale;
 
     if (loginKeyboardLock && lockedPhoneScale !== null) {
       document.documentElement.style.setProperty("--phone-scale", String(lockedPhoneScale));
@@ -315,8 +340,13 @@
       return;
     }
 
-    var availableH = viewport ? viewport.height : window.innerHeight;
-    var scale = Math.min(availableW / DESIGN_WIDTH, availableH / DESIGN_HEIGHT);
+    scale = Math.min(
+      (viewport.width - safeInset) / DESIGN_WIDTH,
+      (viewport.height - safeInset) / DESIGN_HEIGHT
+    );
+    if (!isFinite(scale) || scale <= 0) {
+      scale = 1;
+    }
 
     document.documentElement.style.setProperty("--phone-scale", String(scale));
   }
@@ -964,6 +994,7 @@
       option.textContent = year + "년";
       yearSelect.appendChild(option);
     });
+    refreshCustomSelect(yearSelect);
   }
 
   function openStatsScreen() {
@@ -983,6 +1014,8 @@
   function initStatsScreen() {
     var filterIds = ["stats-year", "stats-month", "stats-op", "stats-digits"];
     var i;
+
+    enhanceStatsSelects();
 
     for (i = 0; i < filterIds.length; i += 1) {
       document.getElementById(filterIds[i]).addEventListener("change", renderStatsScreen);
@@ -1418,6 +1451,301 @@
     return currentQuizAnswer;
   }
 
+  var CUSTOM_SELECT_FONT = '"양재백두체B", "Yj-BACDOO-Bold", sans-serif';
+  var openCustomPicker = null;
+
+  function applySelectFont(select) {
+    var i;
+
+    select.style.fontFamily = CUSTOM_SELECT_FONT;
+    for (i = 0; i < select.options.length; i += 1) {
+      select.options[i].style.fontFamily = CUSTOM_SELECT_FONT;
+    }
+  }
+
+  function getCustomSelectPicker(select) {
+    return select.closest(".custom-select-picker, .quiz-answer-picker");
+  }
+
+  function getCustomSelectList(picker) {
+    return picker.querySelector(".custom-select-list, .quiz-answer-picker-list");
+  }
+
+  function getCustomSelectTrigger(picker) {
+    return picker.querySelector(".custom-select-trigger, .quiz-answer-picker-trigger");
+  }
+
+  function getCustomSelectItemClass(picker) {
+    var list = getCustomSelectList(picker);
+    return list ? list.dataset.itemClass : "custom-select-item";
+  }
+
+  function getOptionButtonLabel(option) {
+    if (option.textContent) {
+      return option.textContent;
+    }
+    if (option.value === "") {
+      return "지우기";
+    }
+    return option.value;
+  }
+
+  function refreshCustomSelectList(select, list, itemClass) {
+    var i;
+    var option;
+    var item;
+
+    list.innerHTML = "";
+    for (i = 0; i < select.options.length; i += 1) {
+      option = select.options[i];
+      item = document.createElement("button");
+      item.type = "button";
+      item.className = itemClass;
+      if (option.value === "" && itemClass.indexOf("quiz-answer-picker-item") !== -1) {
+        item.className += " quiz-answer-picker-item--clear";
+      }
+      item.dataset.value = option.value;
+      item.textContent = getOptionButtonLabel(option);
+      item.setAttribute("role", "option");
+      item.style.fontFamily = CUSTOM_SELECT_FONT;
+      list.appendChild(item);
+    }
+  }
+
+  function syncCustomSelectTrigger(select, trigger, displayMode) {
+    var option;
+
+    if (displayMode === "value") {
+      trigger.textContent = select.value;
+      trigger.classList.remove("quiz-answer-box--correct", "quiz-answer-box--wrong");
+      if (select.classList.contains("quiz-answer-box--correct")) {
+        trigger.classList.add("quiz-answer-box--correct");
+      } else if (select.classList.contains("quiz-answer-box--wrong")) {
+        trigger.classList.add("quiz-answer-box--wrong");
+      }
+      return;
+    }
+
+    option = select.options[select.selectedIndex];
+    trigger.textContent = option ? option.textContent : "";
+  }
+
+  function closeCustomPicker(picker) {
+    var list;
+
+    if (!picker) {
+      return;
+    }
+
+    list = getCustomSelectList(picker);
+    if (list) {
+      list.hidden = true;
+    }
+    if (openCustomPicker === picker) {
+      openCustomPicker = null;
+    }
+  }
+
+  function closeAllCustomPickers() {
+    document.querySelectorAll(".custom-select-picker, .quiz-answer-picker").forEach(function (picker) {
+      closeCustomPicker(picker);
+    });
+  }
+
+  function refreshCustomSelect(select) {
+    var picker = getCustomSelectPicker(select);
+    var list;
+    var trigger;
+    var displayMode;
+
+    if (!picker) {
+      return;
+    }
+
+    list = getCustomSelectList(picker);
+    trigger = getCustomSelectTrigger(picker);
+    displayMode = picker.dataset.displayMode || "text";
+    refreshCustomSelectList(select, list, list.dataset.itemClass);
+    syncCustomSelectTrigger(select, trigger, displayMode);
+    applySelectFont(select);
+  }
+
+  function wrapSelectWithCustomPicker(select, config) {
+    var picker = document.createElement("div");
+    var trigger = document.createElement("button");
+    var list = document.createElement("div");
+    var itemClass = config.itemClass || "custom-select-item";
+    var displayMode = config.displayMode || "text";
+
+    picker.className = config.pickerClass || "custom-select-picker";
+    picker.dataset.displayMode = displayMode;
+
+    trigger.type = "button";
+    trigger.className = config.triggerClass || "custom-select-trigger";
+    trigger.style.fontFamily = CUSTOM_SELECT_FONT;
+    if (select.getAttribute("aria-label")) {
+      trigger.setAttribute("aria-label", select.getAttribute("aria-label"));
+    }
+    trigger.setAttribute("aria-haspopup", "listbox");
+
+    list.className = config.listClass || "custom-select-list";
+    list.hidden = true;
+    list.dataset.itemClass = itemClass;
+    list.setAttribute("role", "listbox");
+    if (config.columns) {
+      list.style.gridTemplateColumns = "repeat(" + config.columns + ", 1fr)";
+    }
+
+    select.classList.add("custom-select-native-hidden");
+    if (config.nativeHiddenClass) {
+      select.classList.add(config.nativeHiddenClass);
+    }
+    select.tabIndex = -1;
+    select.setAttribute("aria-hidden", "true");
+    select.dataset.customSelectEnhanced = "true";
+
+    refreshCustomSelectList(select, list, itemClass);
+    syncCustomSelectTrigger(select, trigger, displayMode);
+    applySelectFont(select);
+
+    trigger.addEventListener("click", function (event) {
+      event.stopPropagation();
+      if (openCustomPicker && openCustomPicker !== picker) {
+        closeCustomPicker(openCustomPicker);
+      }
+      refreshCustomSelectList(select, list, itemClass);
+      syncCustomSelectTrigger(select, trigger, displayMode);
+      list.hidden = !list.hidden;
+      openCustomPicker = list.hidden ? null : picker;
+    });
+
+    list.addEventListener("click", function (event) {
+      var target = event.target.closest(".custom-select-item");
+      if (!target) {
+        return;
+      }
+
+      select.value = target.dataset.value;
+      select.dispatchEvent(new Event("change", { bubbles: true }));
+      syncCustomSelectTrigger(select, trigger, displayMode);
+      closeCustomPicker(picker);
+      trigger.focus();
+    });
+
+    if (select.parentNode) {
+      select.parentNode.replaceChild(picker, select);
+    }
+    picker.appendChild(trigger);
+    picker.appendChild(list);
+    picker.appendChild(select);
+
+    return picker;
+  }
+
+  function enhanceSelectInPlace(select, config) {
+    if (!select) {
+      return null;
+    }
+
+    if (select.dataset.customSelectEnhanced === "true") {
+      refreshCustomSelect(select);
+      return getCustomSelectPicker(select);
+    }
+
+    return wrapSelectWithCustomPicker(select, config);
+  }
+
+  function focusNextAnswerField(currentPicker) {
+    var next = currentPicker.nextElementSibling;
+
+    if (!next) {
+      return;
+    }
+
+    if (next.classList.contains("quiz-answer-picker")) {
+      getCustomSelectTrigger(next).focus();
+      return;
+    }
+
+    if (next.classList.contains("quiz-answer-box") && next.focus) {
+      next.focus();
+    }
+  }
+
+  function handleAnswerSelectChange(select, picker) {
+    var trigger = picker ? getCustomSelectTrigger(picker) : null;
+
+    select.classList.remove("quiz-answer-box--correct", "quiz-answer-box--wrong");
+    if (trigger) {
+      syncCustomSelectTrigger(select, trigger, "value");
+    }
+
+    if (select.value && picker) {
+      focusNextAnswerField(picker);
+    }
+  }
+
+  function wrapAnswerSelectWithPicker(select) {
+    var picker = wrapSelectWithCustomPicker(select, {
+      pickerClass: "quiz-answer-picker custom-select-picker",
+      triggerClass: "quiz-answer-box quiz-answer-picker-trigger custom-select-trigger",
+      listClass: "quiz-answer-picker-list custom-select-list",
+      itemClass: "quiz-answer-picker-item custom-select-item",
+      nativeHiddenClass: "quiz-answer-box--native-hidden",
+      columns: 5,
+      displayMode: "value"
+    });
+
+    select.addEventListener("change", function () {
+      handleAnswerSelectChange(select, picker);
+    });
+
+    return picker;
+  }
+
+  function enhanceStatsSelects() {
+    enhanceSelectInPlace(document.getElementById("stats-year"), {
+      pickerClass: "stats-select-picker custom-select-picker",
+      triggerClass: "stats-select stats-select-trigger custom-select-trigger",
+      listClass: "stats-select-list custom-select-list",
+      itemClass: "stats-select-item custom-select-item",
+      displayMode: "text"
+    });
+    enhanceSelectInPlace(document.getElementById("stats-month"), {
+      pickerClass: "stats-select-picker custom-select-picker",
+      triggerClass: "stats-select stats-select-trigger custom-select-trigger",
+      listClass: "stats-select-list custom-select-list",
+      itemClass: "stats-select-item custom-select-item",
+      displayMode: "text"
+    });
+    enhanceSelectInPlace(document.getElementById("stats-op"), {
+      pickerClass: "stats-select-picker custom-select-picker",
+      triggerClass: "stats-select stats-select-trigger custom-select-trigger",
+      listClass: "stats-select-list custom-select-list",
+      itemClass: "stats-select-item custom-select-item",
+      displayMode: "text"
+    });
+    enhanceSelectInPlace(document.getElementById("stats-digits"), {
+      pickerClass: "stats-select-picker custom-select-picker",
+      triggerClass: "stats-select stats-select-trigger custom-select-trigger",
+      listClass: "stats-select-list custom-select-list",
+      itemClass: "stats-select-item custom-select-item",
+      displayMode: "text"
+    });
+  }
+
+  if (!document.documentElement.dataset.customSelectBound) {
+    document.documentElement.dataset.customSelectBound = "true";
+    document.addEventListener("click", function () {
+      closeAllCustomPickers();
+    });
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") {
+        closeAllCustomPickers();
+      }
+    });
+  }
+
   function createAnswerSelect(index, value, feedback) {
     var select = document.createElement("select");
     var digit;
@@ -1449,14 +1777,8 @@
       select.classList.add("quiz-answer-box--wrong");
     }
 
-    select.addEventListener("change", function (event) {
-      event.target.classList.remove("quiz-answer-box--correct", "quiz-answer-box--wrong");
-      if (event.target.value && event.target.nextElementSibling) {
-        event.target.nextElementSibling.focus();
-      }
-    });
-
-    return select;
+    applySelectFont(select);
+    return wrapAnswerSelectWithPicker(select);
   }
 
   function createAnswerDisplay(digit) {
@@ -1856,7 +2178,7 @@
   }
 
   function getQuizAnswers(gridId) {
-    var selects = document.querySelectorAll("#" + gridId + " .quiz-answer-box");
+    var selects = document.querySelectorAll("#" + gridId + " select.quiz-answer-box");
     var values = [];
     var answerText = "";
     var i;
