@@ -64,6 +64,9 @@
       screen.classList.toggle("phone--hidden", !isTarget);
       screen.hidden = !isTarget;
     });
+    if (screenId !== "screen-1") {
+      resetLoginKeyboardLift(false);
+    }
     updatePhoneScale();
   }
 
@@ -248,9 +251,70 @@
     showScreen("screen-2");
   }
 
+  var loginKeyboardLock = false;
+  var lockedPhoneScale = null;
+
+  function isScreen1Visible() {
+    var screen1 = document.getElementById("screen-1");
+    return screen1 && !screen1.hidden;
+  }
+
+  function isLoginInput(element) {
+    return (
+      element &&
+      loginForm &&
+      loginForm.contains(element) &&
+      (element.name === "name" || element.name === "password")
+    );
+  }
+
+  function resetLoginKeyboardLift(shouldUpdateScale) {
+    loginKeyboardLock = false;
+    lockedPhoneScale = null;
+    document.documentElement.style.setProperty("--phone-lift", "0px");
+    if (shouldUpdateScale !== false) {
+      updatePhoneScale();
+    }
+  }
+
+  function alignLoginFieldForKeyboard() {
+    var viewport = window.visualViewport;
+    var active = document.activeElement;
+
+    if (!loginKeyboardLock || !viewport || !isLoginInput(active)) {
+      return;
+    }
+
+    var field = active.closest(".field");
+    if (!field) {
+      return;
+    }
+
+    var fieldRect = field.getBoundingClientRect();
+    var visibleTop = viewport.offsetTop;
+    var visibleBottom = viewport.offsetTop + viewport.height;
+    var padding = 14;
+    var lift = 0;
+
+    if (fieldRect.bottom > visibleBottom - padding) {
+      lift = fieldRect.bottom - visibleBottom + padding;
+    } else if (fieldRect.top < visibleTop + padding) {
+      lift = -(padding - (fieldRect.top - visibleTop));
+    }
+
+    document.documentElement.style.setProperty("--phone-lift", Math.max(0, lift) + "px");
+  }
+
   function updatePhoneScale() {
     var viewport = window.visualViewport;
     var availableW = viewport ? viewport.width : window.innerWidth;
+
+    if (loginKeyboardLock && lockedPhoneScale !== null) {
+      document.documentElement.style.setProperty("--phone-scale", String(lockedPhoneScale));
+      alignLoginFieldForKeyboard();
+      return;
+    }
+
     var availableH = viewport ? viewport.height : window.innerHeight;
     var scale = Math.min(availableW / DESIGN_WIDTH, availableH / DESIGN_HEIGHT);
 
@@ -258,7 +322,42 @@
   }
 
   function lockPageScroll() {
+    if (loginKeyboardLock) {
+      return;
+    }
     window.scrollTo(0, 0);
+  }
+
+  function setupLoginKeyboardLift() {
+    var inputs = loginForm.querySelectorAll('input[name="name"], input[name="password"]');
+
+    inputs.forEach(function (input) {
+      input.addEventListener("focus", function () {
+        if (!isScreen1Visible()) {
+          return;
+        }
+
+        loginKeyboardLock = true;
+        lockedPhoneScale =
+          parseFloat(
+            getComputedStyle(document.documentElement).getPropertyValue("--phone-scale")
+          ) || 1;
+
+        requestAnimationFrame(function () {
+          requestAnimationFrame(alignLoginFieldForKeyboard);
+        });
+      });
+
+      input.addEventListener("blur", function () {
+        setTimeout(function () {
+          if (isLoginInput(document.activeElement)) {
+            alignLoginFieldForKeyboard();
+            return;
+          }
+          resetLoginKeyboardLift();
+        }, 80);
+      });
+    });
   }
 
   function updateAgeDisplay() {
@@ -285,19 +384,29 @@
   if (window.visualViewport) {
     window.visualViewport.addEventListener("resize", function () {
       updatePhoneScale();
-      lockPageScroll();
+      if (!loginKeyboardLock) {
+        lockPageScroll();
+      }
     });
-    window.visualViewport.addEventListener("scroll", lockPageScroll, { passive: true });
+    window.visualViewport.addEventListener("scroll", function () {
+      if (loginKeyboardLock) {
+        alignLoginFieldForKeyboard();
+        return;
+      }
+      lockPageScroll();
+    }, { passive: true });
   }
 
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(updatePhoneScale);
   }
 
+  var loginForm = document.getElementById("login-form");
+
   updatePhoneScale();
   ensureMasterAccount();
+  setupLoginKeyboardLift();
 
-  var loginForm = document.getElementById("login-form");
   var signupLink = document.getElementById("signup-link");
   var loginLink = document.getElementById("login-link");
   var exitBtn = document.getElementById("exit-btn");

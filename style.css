@@ -29,6 +29,7 @@
   --phone-width: 252px;
   --phone-height: 420px;
   --phone-scale: 1;
+  --phone-lift: 0px;
   --main-font: "양재백두체B", sans-serif;
 }
 
@@ -82,6 +83,8 @@ select {
   width: calc(var(--design-width) * 1px * var(--phone-scale));
   height: calc(var(--design-height) * 1px * var(--phone-scale));
   flex-shrink: 0;
+  transform: translateY(calc(-1 * var(--phone-lift)));
+  transition: transform 0.18s ease;
 }
 
 .phone {
