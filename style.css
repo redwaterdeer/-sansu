@@ -956,14 +956,31 @@ select,
 
 .quiz-answer-picker-list.quiz-answer-picker-list--floating {
   position: fixed;
-  left: 50%;
   bottom: auto;
-  transform: translateX(-50%);
+  transform: none;
   z-index: 1000;
 }
 
+.quiz-answer-picker-list.quiz-answer-picker-list--compact {
+  grid-template-columns: repeat(5, 26px);
+  gap: 3px;
+  padding: 4px;
+}
+
+.quiz-answer-picker-list--compact .quiz-answer-picker-item {
+  width: 26px;
+  height: 26px;
+  font-size: 16px;
+  line-height: 22px;
+}
+
+.quiz-answer-picker-list--compact .quiz-answer-picker-item--clear {
+  font-size: 12px;
+  line-height: 24px;
+}
+
 .quiz-answer-picker-trigger.quiz-answer-box--typing {
-  animation: answer-box-blink 1s step-end infinite;
+  animation: answer-box-blink 0.5s step-end infinite;
 }
 
 @keyframes answer-box-blink {
@@ -1320,18 +1337,21 @@ select,
 .quiz-screen--divide.quiz-digits-4 .quiz-body {
   position: relative;
   min-height: 0;
-  overflow: hidden;
+  overflow: visible;
+  justify-content: flex-start;
 }
 
 .quiz-screen--divide.quiz-digits-4 .quiz-badge-img {
-  top: 118px;
+  top: 88px;
+  width: 64px;
+  height: 64px;
 }
 
 .quiz-screen--divide.quiz-digits-4 .quiz-submit {
   position: static;
   align-self: flex-start;
-  margin-top: auto;
-  margin-bottom: 4px;
+  margin-top: 4px;
+  margin-bottom: 0;
   flex-shrink: 0;
   z-index: auto;
 }
@@ -1339,30 +1359,33 @@ select,
 #screen-quiz.quiz-screen--divide.quiz-digits-4 .quiz-submit,
 #screen-quiz-wrong.quiz-screen--divide.quiz-digits-4 .quiz-submit,
 #screen-quiz-correct.quiz-screen--divide.quiz-digits-4 .quiz-submit {
-  position: absolute;
-  left: 0;
-  top: 228px;
-  margin-top: 0;
+  position: static;
+  left: auto;
+  top: auto;
+  margin-top: 4px;
   margin-bottom: 0;
-  z-index: 2;
+  z-index: auto;
 }
 
 .quiz-screen--divide.quiz-digits-4 .quiz-problem {
   margin-top: 0;
-  padding-left: 28px;
+  padding-left: 24px;
   padding-bottom: 0;
-  flex-shrink: 0;
+  flex-shrink: 1;
   min-height: 0;
+  width: 100%;
 }
 
-.quiz-screen--divide.quiz-digits-4 > .difficulty-exit {
-  position: relative;
-  z-index: 5;
-  flex-shrink: 0;
+.quiz-screen--divide.quiz-digits-4 .quiz-meta {
+  padding-top: 6px;
+}
+
+.quiz-screen--divide.quiz-digits-4 .quiz-title {
+  font-size: 20px;
 }
 
 .quiz-screen--divide.quiz-digits-4 .quiz-divide-bracket--mark {
-  height: 24px;
+  height: 20px;
 }
 
 .quiz-screen--divide.quiz-digits-4 .quiz-grid--divide .quiz-digit,
@@ -1370,16 +1393,35 @@ select,
 .quiz-screen--divide.quiz-digits-4 .quiz-grid--divide .quiz-answer-box,
 .quiz-screen--divide.quiz-digits-4 .quiz-grid--divide .quiz-answer-display,
 .quiz-screen--divide.quiz-digits-4 .quiz-grid--divide .quiz-multiply-spacer {
-  width: 24px;
-  min-height: 24px;
-  height: 24px;
-  font-size: 24px;
+  width: 20px;
+  min-height: 20px;
+  height: 20px;
+  font-size: 20px;
   line-height: 1;
 }
 
+.quiz-screen--divide.quiz-digits-4 .quiz-grid--divide .quiz-answer-box,
+.quiz-screen--divide.quiz-digits-4 .quiz-grid--divide .quiz-answer-picker {
+  width: 20px;
+  height: 20px;
+}
+
+.quiz-screen--divide.quiz-digits-4 .quiz-grid--divide .quiz-answer-picker-trigger {
+  width: 20px;
+  height: 20px;
+  font-size: 14px;
+  line-height: 16px;
+}
+
 .quiz-screen--divide.quiz-digits-4 .quiz-grid--divide .quiz-answer-box {
-  font-size: 16px;
-  line-height: 20px;
+  font-size: 14px;
+  line-height: 16px;
+}
+
+.quiz-screen--divide.quiz-digits-4 > .difficulty-exit {
+  position: relative;
+  z-index: 5;
+  flex-shrink: 0;
 }
 
 .quiz-screen--divide .quiz-answer-box--good {

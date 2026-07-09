@@ -349,6 +349,20 @@
     }
 
     document.documentElement.style.setProperty("--phone-scale", String(scale));
+    refitVisibleQuizGrids();
+  }
+
+  function refitVisibleQuizGrids() {
+    var gridIds = ["quiz-problem-grid", "quiz-wrong-grid", "quiz-correct-grid"];
+    var i;
+    var grid;
+
+    for (i = 0; i < gridIds.length; i += 1) {
+      grid = document.getElementById(gridIds[i]);
+      if (grid && grid.offsetParent !== null) {
+        fitQuizProblemGrid(gridIds[i]);
+      }
+    }
   }
 
   function lockPageScroll() {
@@ -1485,7 +1499,7 @@
       return option.textContent;
     }
     if (option.value === "") {
-      return "지우기";
+      return "지우개";
     }
     return option.value;
   }
@@ -1582,24 +1596,70 @@
 
   function positionQuizAnswerPickerList(list, trigger) {
     var rect = trigger.getBoundingClientRect();
-    var gap = 4;
+    var gap = 10;
+    var listHeight;
+    var listWidth;
+    var left;
     var top;
+    var spaceAbove;
+    var spaceBelow;
+
+    if (!list.dataset.portaled && list.parentNode !== document.body) {
+      list._pickerParent = list.parentNode;
+      document.body.appendChild(list);
+      list.dataset.portaled = "true";
+    }
+
+    list.classList.remove("quiz-answer-picker-list--compact");
+    if (trigger.offsetWidth <= 24) {
+      list.classList.add("quiz-answer-picker-list--compact");
+    }
 
     list.classList.add("quiz-answer-picker-list--floating");
     list.hidden = false;
     list.style.visibility = "hidden";
-    top = rect.top - list.offsetHeight - gap;
-    if (top < 8) {
-      top = 8;
+    listHeight = list.offsetHeight;
+    listWidth = list.offsetWidth;
+    left = Math.max(8, (window.innerWidth - listWidth) / 2);
+    spaceAbove = rect.top;
+    spaceBelow = window.innerHeight - rect.bottom;
+
+    if (spaceAbove >= listHeight + gap) {
+      top = rect.top - listHeight - gap;
+    } else if (spaceBelow >= listHeight + gap) {
+      top = rect.bottom + gap;
+    } else if (spaceAbove >= spaceBelow) {
+      top = Math.max(8, rect.top - listHeight - gap);
+    } else {
+      top = rect.bottom + gap;
     }
+
+    if (top + listHeight > window.innerHeight - 8) {
+      top = window.innerHeight - listHeight - 8;
+    }
+    if (top + listHeight + gap > rect.top && top < rect.bottom) {
+      if (spaceBelow >= spaceAbove) {
+        top = rect.bottom + gap;
+      } else {
+        top = Math.max(8, rect.top - listHeight - gap);
+      }
+    }
+
+    list.style.left = left + "px";
     list.style.top = top + "px";
     list.style.visibility = "visible";
   }
 
   function resetQuizAnswerPickerList(list) {
-    list.classList.remove("quiz-answer-picker-list--floating");
+    list.classList.remove("quiz-answer-picker-list--floating", "quiz-answer-picker-list--compact");
+    list.style.left = "";
     list.style.top = "";
     list.style.visibility = "";
+    if (list.dataset.portaled && list._pickerParent) {
+      list._pickerParent.appendChild(list);
+      delete list.dataset.portaled;
+      delete list._pickerParent;
+    }
   }
 
   function setAnswerBoxTyping(trigger, isTyping) {
@@ -2015,6 +2075,7 @@
     for (j = 0; j < cols; j += 1) {
       answerIndex = appendMultiplyAnswerCell(grid, answerIndex, answers, feedback, readOnly);
     }
+    fitQuizProblemGrid(gridId);
   }
 
   function getDivideGridMetrics(cols, digitLevel) {
@@ -2032,6 +2093,11 @@
       cell = 28;
       side = 24;
       bracket = 19;
+    } else if (digitLevel === 4) {
+      cell = 20;
+      gap = 1;
+      side = 20;
+      bracket = 15;
     } else if (cols >= 4) {
       cell = 24;
       gap = 2;
@@ -2108,7 +2174,7 @@
     grid.style.gridTemplateColumns =
       metrics.side + "px " + metrics.bracket + "px repeat(" + layout.cols + ", " + metrics.cell + "px)";
     grid.style.columnGap = metrics.gap + "px";
-    grid.style.rowGap = "2px";
+    grid.style.rowGap = currentQuizState.digits === 4 ? "1px" : "2px";
     grid.style.setProperty(
       "--divide-hline-width",
       metrics.bracket + layout.cols * metrics.cell + Math.max(0, layout.cols - 1) * metrics.gap + "px"
@@ -2176,6 +2242,50 @@
           false
         );
       }
+    }
+    fitQuizProblemGrid(gridId);
+  }
+
+  function fitQuizProblemGrid(gridId) {
+    var grid = document.getElementById(gridId);
+    var screen;
+    var body;
+    var problem;
+    var submit;
+    var available;
+    var gridHeight;
+    var scale;
+
+    if (!grid) {
+      return;
+    }
+
+    screen = grid.closest(".phone");
+    if (!screen) {
+      return;
+    }
+
+    body = screen.querySelector(".quiz-body");
+    problem = screen.querySelector(".quiz-problem");
+    if (!body || !problem) {
+      return;
+    }
+
+    problem.style.transform = "";
+    problem.style.marginBottom = "";
+
+    submit = body.querySelector(".quiz-submit");
+    available = body.clientHeight - (problem.offsetTop - body.offsetTop) - 4;
+    if (submit) {
+      available -= submit.offsetHeight + 6;
+    }
+
+    gridHeight = grid.offsetHeight;
+    if (gridHeight > available && available > 40) {
+      scale = Math.max(0.78, available / gridHeight);
+      problem.style.transform = "scale(" + scale + ")";
+      problem.style.transformOrigin = "top center";
+      problem.style.marginBottom = gridHeight * scale - gridHeight + "px";
     }
   }
 
@@ -2249,6 +2359,7 @@
         grid.appendChild(createAnswerSelect(j, answerValue, digitFeedback));
       }
     }
+    fitQuizProblemGrid(gridId);
   }
 
   function getQuizAnswers(gridId) {
