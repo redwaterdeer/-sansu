@@ -1532,14 +1532,20 @@
 
   function closeCustomPicker(picker) {
     var list;
+    var trigger;
 
     if (!picker) {
       return;
     }
 
     list = getCustomSelectList(picker);
+    trigger = getCustomSelectTrigger(picker);
     if (list) {
       list.hidden = true;
+      resetQuizAnswerPickerList(list);
+    }
+    if (trigger) {
+      trigger.classList.remove("quiz-answer-box--typing");
     }
     if (openCustomPicker === picker) {
       openCustomPicker = null;
@@ -1568,6 +1574,45 @@
     refreshCustomSelectList(select, list, list.dataset.itemClass);
     syncCustomSelectTrigger(select, trigger, displayMode);
     applySelectFont(select);
+  }
+
+  function isQuizAnswerPicker(picker) {
+    return picker.classList.contains("quiz-answer-picker");
+  }
+
+  function positionQuizAnswerPickerList(list, trigger) {
+    var rect = trigger.getBoundingClientRect();
+    var gap = 4;
+    var top;
+
+    list.classList.add("quiz-answer-picker-list--floating");
+    list.hidden = false;
+    list.style.visibility = "hidden";
+    top = rect.top - list.offsetHeight - gap;
+    if (top < 8) {
+      top = 8;
+    }
+    list.style.top = top + "px";
+    list.style.visibility = "visible";
+  }
+
+  function resetQuizAnswerPickerList(list) {
+    list.classList.remove("quiz-answer-picker-list--floating");
+    list.style.top = "";
+    list.style.visibility = "";
+  }
+
+  function setAnswerBoxTyping(trigger, isTyping) {
+    if (!trigger) {
+      return;
+    }
+    trigger.classList.toggle("quiz-answer-box--typing", isTyping);
+  }
+
+  function openQuizAnswerPicker(picker, list, trigger) {
+    positionQuizAnswerPickerList(list, trigger);
+    setAnswerBoxTyping(trigger, true);
+    openCustomPicker = picker;
   }
 
   function wrapSelectWithCustomPicker(select, config) {
@@ -1615,8 +1660,17 @@
       }
       refreshCustomSelectList(select, list, itemClass);
       syncCustomSelectTrigger(select, trigger, displayMode);
-      list.hidden = !list.hidden;
-      openCustomPicker = list.hidden ? null : picker;
+
+      if (list.hidden) {
+        if (isQuizAnswerPicker(picker)) {
+          openQuizAnswerPicker(picker, list, trigger);
+        } else {
+          list.hidden = false;
+          openCustomPicker = picker;
+        }
+      } else {
+        closeCustomPicker(picker);
+      }
     });
 
     list.addEventListener("click", function (event) {
@@ -1744,6 +1798,26 @@
         closeAllCustomPickers();
       }
     });
+    window.addEventListener("resize", function () {
+      if (!openCustomPicker || !isQuizAnswerPicker(openCustomPicker)) {
+        return;
+      }
+      positionQuizAnswerPickerList(
+        getCustomSelectList(openCustomPicker),
+        getCustomSelectTrigger(openCustomPicker)
+      );
+    });
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", function () {
+        if (!openCustomPicker || !isQuizAnswerPicker(openCustomPicker)) {
+          return;
+        }
+        positionQuizAnswerPickerList(
+          getCustomSelectList(openCustomPicker),
+          getCustomSelectTrigger(openCustomPicker)
+        );
+      });
+    }
   }
 
   function createAnswerSelect(index, value, feedback) {
