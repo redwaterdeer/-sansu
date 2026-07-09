@@ -3,7 +3,7 @@
   src:
     local("양재백두체B"),
     local("Yj-BACDOO-Bold"),
-    url("../fonts/양재백두체B.ttf") format("truetype");
+    url("fonts/양재백두체B.ttf") format("truetype");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -179,7 +179,7 @@ select {
   z-index: 1;
   width: 66px;
   height: 66px;
-  background-image: url("../images/symbols.png");
+  background-image: url("symbols.png");
   background-size: 200% 200%;
   background-repeat: no-repeat;
   mix-blend-mode: screen;
