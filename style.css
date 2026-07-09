@@ -15,6 +15,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  font-family: inherit;
 }
 
 :root {
@@ -31,33 +32,50 @@
   --main-font: "양재백두체B", sans-serif;
 }
 
-html,
-body {
+html {
+  position: fixed;
+  inset: 0;
+  width: 100%;
   height: 100%;
   overflow: hidden;
+  overscroll-behavior: none;
+  -webkit-text-size-adjust: 100%;
+  font-family: var(--main-font);
+  touch-action: manipulation;
 }
 
 body {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
   font-family: var(--main-font);
   background: var(--bg-cream);
   color: var(--text-dark);
   -webkit-font-smoothing: antialiased;
 }
 
+button,
+input,
+textarea,
+select {
+  font-family: var(--main-font);
+}
+
 .page {
-  width: 100vw;
-  height: 100dvh;
-  min-height: 100vh;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--bg-cream);
-  padding:
-    max(12px, env(safe-area-inset-top))
-    max(12px, env(safe-area-inset-right))
-    max(12px, env(safe-area-inset-bottom))
-    max(12px, env(safe-area-inset-left));
+  padding: 0;
   overflow: hidden;
+  overscroll-behavior: none;
 }
 
 .phone-viewport {
@@ -72,9 +90,13 @@ body {
   transform: scale(var(--phone-scale));
   transform-origin: top left;
   background: var(--bg-cream);
-  border: 1px solid var(--border-dark);
-  border-radius: 14px;
-  padding: 12px 14px 14px;
+  border: none;
+  border-radius: 0;
+  padding:
+    max(12px, env(safe-area-inset-top))
+    max(14px, env(safe-area-inset-right))
+    max(14px, env(safe-area-inset-bottom))
+    max(14px, env(safe-area-inset-left));
   display: flex;
   flex-direction: column;
   overflow: hidden;

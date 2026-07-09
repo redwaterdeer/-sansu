@@ -249,20 +249,16 @@
   }
 
   function updatePhoneScale() {
-    var page = document.querySelector(".page");
-    if (!page) {
-      return;
-    }
-
-    var styles = window.getComputedStyle(page);
-    var padX = parseFloat(styles.paddingLeft) + parseFloat(styles.paddingRight);
-    var padY = parseFloat(styles.paddingTop) + parseFloat(styles.paddingBottom);
     var viewport = window.visualViewport;
-    var availableW = (viewport ? viewport.width : window.innerWidth) - padX;
-    var availableH = (viewport ? viewport.height : window.innerHeight) - padY;
+    var availableW = viewport ? viewport.width : window.innerWidth;
+    var availableH = viewport ? viewport.height : window.innerHeight;
     var scale = Math.min(availableW / DESIGN_WIDTH, availableH / DESIGN_HEIGHT);
 
     document.documentElement.style.setProperty("--phone-scale", String(scale));
+  }
+
+  function lockPageScroll() {
+    window.scrollTo(0, 0);
   }
 
   function updateAgeDisplay() {
@@ -276,11 +272,22 @@
     updateAgeDisplay();
   }
 
-  window.addEventListener("resize", updatePhoneScale);
-  window.addEventListener("orientationchange", updatePhoneScale);
+  window.addEventListener("resize", function () {
+    updatePhoneScale();
+    lockPageScroll();
+  });
+  window.addEventListener("orientationchange", function () {
+    updatePhoneScale();
+    lockPageScroll();
+  });
+  window.addEventListener("scroll", lockPageScroll, { passive: true });
 
   if (window.visualViewport) {
-    window.visualViewport.addEventListener("resize", updatePhoneScale);
+    window.visualViewport.addEventListener("resize", function () {
+      updatePhoneScale();
+      lockPageScroll();
+    });
+    window.visualViewport.addEventListener("scroll", lockPageScroll, { passive: true });
   }
 
   if (document.fonts && document.fonts.ready) {
