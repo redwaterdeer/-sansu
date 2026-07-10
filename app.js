@@ -2497,6 +2497,135 @@
     updateQuizNumberDisplay();
     renderQuizGrid("quiz-correct-grid", userValues, null, { readOnly: true });
     showScreen("screen-quiz-correct");
+    requestAnimationFrame(function () {
+      playQuizFireworks();
+    });
+  }
+
+  var quizFireworksFrame = null;
+
+  function stopQuizFireworks() {
+    if (quizFireworksFrame) {
+      cancelAnimationFrame(quizFireworksFrame);
+      quizFireworksFrame = null;
+    }
+
+    var canvas = document.getElementById("quiz-fireworks");
+    if (!canvas) {
+      return;
+    }
+
+    var ctx = canvas.getContext("2d");
+    if (ctx) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  }
+
+  function playQuizFireworks() {
+    var canvas = document.getElementById("quiz-fireworks");
+    var screen = document.getElementById("screen-quiz-correct");
+    var rect;
+    var dpr;
+    var ctx;
+    var particles = [];
+    var colors = ["#e63b3b", "#ff8a6a", "#ffd166", "#4ecdc4", "#ff6b9d", "#ffe66d", "#ffffff"];
+    var startTime = performance.now();
+    var duration = 2400;
+    var burstCount = 0;
+    var maxBursts = 6;
+    var width;
+    var height;
+
+    if (!canvas || !screen) {
+      return;
+    }
+
+    stopQuizFireworks();
+
+    rect = screen.getBoundingClientRect();
+    dpr = window.devicePixelRatio || 1;
+    width = rect.width;
+    height = rect.height;
+    canvas.width = Math.max(1, Math.floor(width * dpr));
+    canvas.height = Math.max(1, Math.floor(height * dpr));
+    canvas.style.width = width + "px";
+    canvas.style.height = height + "px";
+
+    ctx = canvas.getContext("2d");
+    if (!ctx) {
+      return;
+    }
+
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    function addBurst() {
+      var x = width * (0.2 + Math.random() * 0.6);
+      var y = height * (0.18 + Math.random() * 0.38);
+      var color = colors[Math.floor(Math.random() * colors.length)];
+      var i;
+      var angle;
+      var speed;
+
+      for (i = 0; i < 30; i += 1) {
+        angle = (Math.PI * 2 * i) / 30 + Math.random() * 0.4;
+        speed = 1.8 + Math.random() * 3.2;
+        particles.push({
+          x: x,
+          y: y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          life: 1,
+          decay: 0.016 + Math.random() * 0.014,
+          color: color,
+          size: 1.5 + Math.random() * 2.5
+        });
+      }
+    }
+
+    function frame(now) {
+      var elapsed = now - startTime;
+      var i;
+      var particle;
+
+      ctx.clearRect(0, 0, width, height);
+
+      if (burstCount < maxBursts && elapsed > burstCount * 320) {
+        addBurst();
+        burstCount += 1;
+      }
+
+      for (i = particles.length - 1; i >= 0; i -= 1) {
+        particle = particles[i];
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+        particle.vy += 0.055;
+        particle.vx *= 0.985;
+        particle.life -= particle.decay;
+
+        if (particle.life <= 0) {
+          particles.splice(i, 1);
+          continue;
+        }
+
+        ctx.globalAlpha = Math.max(0, particle.life);
+        ctx.fillStyle = particle.color;
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.globalAlpha = 1;
+
+      if (elapsed < duration || particles.length > 0) {
+        quizFireworksFrame = requestAnimationFrame(frame);
+      } else {
+        stopQuizFireworks();
+      }
+    }
+
+    addBurst();
+    burstCount = 1;
+    quizFireworksFrame = requestAnimationFrame(frame);
   }
 
   function loadQuizProblem(opScreen, digits, problemOverride) {
@@ -2561,6 +2690,7 @@
   }
 
   function nextQuizProblem() {
+    stopQuizFireworks();
     if (quizMode === "wrong") {
       var remaining = getWrongProblemsForQuiz(currentQuizState.opScreen, currentQuizState.digits);
 
