@@ -447,8 +447,35 @@
 
   var loginForm = document.getElementById("login-form");
 
+  function preventLoginAutofillPopup() {
+    var inputs;
+    var i;
+    var input;
+
+    if (!loginForm) {
+      return;
+    }
+
+    loginForm.setAttribute("autocomplete", "off");
+    inputs = loginForm.querySelectorAll('input[name="name"], input[name="password"]');
+
+    for (i = 0; i < inputs.length; i += 1) {
+      input = inputs[i];
+      input.setAttribute("autocomplete", "off");
+      input.setAttribute("readonly", "readonly");
+      input.addEventListener(
+        "focus",
+        function (event) {
+          event.target.removeAttribute("readonly");
+        },
+        { once: true }
+      );
+    }
+  }
+
   updatePhoneScale();
   ensureMasterAccount();
+  preventLoginAutofillPopup();
   setupLoginKeyboardLift();
 
   var signupLink = document.getElementById("signup-link");

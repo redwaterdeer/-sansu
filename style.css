@@ -762,7 +762,7 @@ select,
 #screen-quiz .quiz-header,
 #screen-quiz-wrong .quiz-header,
 #screen-quiz-correct .quiz-header {
-  padding-left: 20px;
+  padding-left: 36px;
 }
 
 .quiz-header {
