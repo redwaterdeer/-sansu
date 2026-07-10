@@ -309,29 +309,22 @@
     var vv = window.visualViewport;
     var width = window.innerWidth;
     var height = window.innerHeight;
-    var clientW = document.documentElement.clientWidth;
-    var clientH = document.documentElement.clientHeight;
 
     if (vv) {
-      width = Math.min(width, vv.width);
-      height = Math.min(height, vv.height);
-    }
-    if (clientW > 0) {
-      width = Math.min(width, clientW);
-    }
-    if (clientH > 0) {
-      height = Math.min(height, clientH);
+      width = vv.width;
+      height = vv.height;
     }
 
     return {
-      width: width,
-      height: height
+      width: Math.max(1, width),
+      height: Math.max(1, height)
     };
   }
 
   function updatePhoneScale() {
     var viewport = getAvailableViewport();
-    var safeInset = 2;
+    var safeInsetX = 8;
+    var safeInsetY = 20;
     var scale;
 
     if (loginKeyboardLock && lockedPhoneScale !== null) {
@@ -341,8 +334,8 @@
     }
 
     scale = Math.min(
-      (viewport.width - safeInset) / DESIGN_WIDTH,
-      (viewport.height - safeInset) / DESIGN_HEIGHT
+      (viewport.width - safeInsetX) / DESIGN_WIDTH,
+      (viewport.height - safeInsetY) / DESIGN_HEIGHT
     );
     if (!isFinite(scale) || scale <= 0) {
       scale = 1;
@@ -444,6 +437,12 @@
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(updatePhoneScale);
   }
+
+  window.addEventListener("load", function () {
+    updatePhoneScale();
+    setTimeout(updatePhoneScale, 300);
+    setTimeout(updatePhoneScale, 800);
+  });
 
   var loginForm = document.getElementById("login-form");
 
