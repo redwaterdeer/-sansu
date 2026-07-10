@@ -2133,25 +2133,25 @@
     var shrink;
 
     if (digitLevel === 4) {
-      cell = 20;
+      cell = 22;
       gap = 1;
-      font = 18;
-      maxWidth = 214;
+      font = 20;
+      maxWidth = 218;
     } else if (digitLevel === 2) {
-      cell = 26;
+      cell = 28;
       gap = 3;
-      font = 26;
-      maxWidth = 196;
+      font = 28;
+      maxWidth = 202;
     } else if (digitLevel === 1) {
-      cell = 30;
+      cell = 32;
       gap = 1;
-      font = 30;
-      maxWidth = 180;
+      font = 32;
+      maxWidth = 186;
     } else {
-      cell = maxCols >= 5 ? 22 : maxCols >= 4 ? 24 : 26;
+      cell = maxCols >= 5 ? 24 : maxCols >= 4 ? 26 : 28;
       gap = 1;
       font = cell;
-      maxWidth = 200;
+      maxWidth = 206;
     }
 
     side = cell * divisorLen + gap * Math.max(0, divisorLen - 1);
@@ -2250,7 +2250,7 @@
     grid.style.setProperty("--divide-gap", metrics.gap + "px");
     grid.style.setProperty(
       "--divide-answer-font",
-      Math.max(12, Math.round(metrics.font * 0.68)) + "px"
+      Math.max(13, Math.round(metrics.font * 0.74)) + "px"
     );
     grid.style.setProperty(
       "--divide-hline-width",
