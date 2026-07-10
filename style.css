@@ -753,6 +753,12 @@ select,
 
 /* ===== 14번 화면 (산수 문제) ===== */
 
+#screen-quiz .quiz-header,
+#screen-quiz-wrong .quiz-header,
+#screen-quiz-correct .quiz-header {
+  padding-left: 20px;
+}
+
 .quiz-header {
   display: flex;
   align-items: flex-start;
@@ -1179,12 +1185,30 @@ select,
   top: 0;
 }
 
-.quiz-screen--divide.quiz-digits-3 .quiz-badge-img {
-  top: 168px;
+.quiz-screen--divide.quiz-digits-2 .quiz-submit {
+  position: absolute;
+  left: 6px;
+  top: 76px;
+  margin-top: 0;
+  flex-shrink: 0;
+  z-index: 2;
 }
 
-.quiz-screen--divide .quiz-submit {
-  margin-top: 8px;
+.quiz-screen--divide.quiz-digits-3 .quiz-badge-img {
+  top: 145px;
+}
+
+.quiz-screen--divide.quiz-digits-3 .quiz-submit {
+  position: absolute;
+  left: 6px;
+  top: 227px;
+  margin-top: 0;
+  flex-shrink: 0;
+  z-index: 2;
+}
+
+.quiz-screen--divide.quiz-digits-3 .quiz-problem {
+  padding-left: 26px;
 }
 
 .quiz-grid--divide {
@@ -1336,13 +1360,8 @@ select,
   height: 28px;
 }
 
-.quiz-screen--divide.quiz-digits-2 .quiz-submit {
-  margin-top: 2px;
-  flex-shrink: 0;
-}
-
-.quiz-screen--divide.quiz-digits-3 .quiz-problem {
-  padding-left: 26px;
+.quiz-screen--divide .quiz-submit {
+  margin-top: 8px;
 }
 
 .quiz-screen--divide.quiz-digits-4 .quiz-body {
