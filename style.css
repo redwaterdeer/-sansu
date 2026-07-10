@@ -299,6 +299,8 @@ select,
   margin-top: 10px;
   text-align: center;
   flex-shrink: 0;
+  position: relative;
+  top: 6px;
 }
 
 .signup-link a {
@@ -467,6 +469,8 @@ select,
   margin-top: 8px;
   text-align: center;
   flex-shrink: 0;
+  position: relative;
+  top: 6px;
 }
 
 #screen-2 .exit-link {
@@ -733,6 +737,8 @@ select,
   padding-top: 6px;
   text-align: center;
   flex-shrink: 0;
+  position: relative;
+  top: 6px;
 }
 
 .difficulty-exit button {
@@ -1186,10 +1192,11 @@ select,
 }
 
 .quiz-screen--divide.quiz-digits-2 .quiz-submit {
-  position: absolute;
-  left: 6px;
-  top: 76px;
-  margin-top: 0;
+  position: static;
+  align-self: flex-start;
+  margin-top: auto;
+  margin-left: 6px;
+  margin-bottom: 8px;
   flex-shrink: 0;
   z-index: 2;
 }
@@ -1339,6 +1346,10 @@ select,
   align-items: center;
   min-height: 0;
   flex-shrink: 0;
+}
+
+.quiz-screen--divide.quiz-digits-2 .quiz-body {
+  min-height: 0;
 }
 
 .quiz-screen--divide.quiz-digits-2 .quiz-grid--divide .quiz-digit,
@@ -1838,6 +1849,8 @@ select,
 .stats-exit {
   margin-top: auto;
   flex-shrink: 0;
+  position: relative;
+  top: 6px;
 }
 
 /* ===== 관리자 화면 (16번) ===== */
@@ -1915,6 +1928,8 @@ select,
   margin-top: auto;
   padding-top: 6px;
   flex-shrink: 0;
+  position: relative;
+  top: 6px;
 }
 
 .admin-exit button {
