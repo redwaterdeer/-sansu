@@ -1195,7 +1195,7 @@ select,
   position: static;
   align-self: flex-start;
   margin-top: auto;
-  margin-left: 58px;
+  margin-left: 64px;
   margin-bottom: 18px;
   flex-shrink: 0;
   z-index: 2;
@@ -1375,12 +1375,13 @@ select,
   row-gap: 2px;
 }
 
-.quiz-screen--divide.quiz-digits-2 .quiz-divide-side {
-  width: 22px;
+.quiz-screen--divide.quiz-digits-2 .quiz-divide-side,
+.quiz-screen--divide.quiz-digits-2 .quiz-divide-bracket {
+  width: 20px;
 }
 
-.quiz-screen--divide.quiz-digits-2 .quiz-divide-bracket {
-  width: 18px;
+.quiz-screen--divide.quiz-digits-2 .quiz-grid--divide .quiz-divide-divisor {
+  width: 20px;
 }
 
 .quiz-screen--divide.quiz-digits-2 .quiz-grid--divide .quiz-digit,

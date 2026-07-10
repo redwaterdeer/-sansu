@@ -2108,8 +2108,8 @@
 
     if (digitLevel === 2) {
       return {
-        side: 22,
-        bracket: 18,
+        side: 20,
+        bracket: 20,
         cell: 26,
         gap: 3
       };
