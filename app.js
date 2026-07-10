@@ -2529,10 +2529,8 @@
     var ctx;
     var particles = [];
     var colors = ["#e63b3b", "#ff8a6a", "#ffd166", "#4ecdc4", "#ff6b9d", "#ffe66d", "#ffffff"];
-    var startTime = performance.now();
-    var duration = 2400;
-    var burstCount = 0;
-    var maxBursts = 6;
+    var lastBurstTime = 0;
+    var burstInterval = 380;
     var width;
     var height;
 
@@ -2583,15 +2581,18 @@
     }
 
     function frame(now) {
-      var elapsed = now - startTime;
       var i;
       var particle;
 
+      if (!lastBurstTime) {
+        lastBurstTime = now;
+      }
+
       ctx.clearRect(0, 0, width, height);
 
-      if (burstCount < maxBursts && elapsed > burstCount * 320) {
+      if (now - lastBurstTime >= burstInterval) {
         addBurst();
-        burstCount += 1;
+        lastBurstTime = now;
       }
 
       for (i = particles.length - 1; i >= 0; i -= 1) {
@@ -2615,16 +2616,10 @@
       }
 
       ctx.globalAlpha = 1;
-
-      if (elapsed < duration || particles.length > 0) {
-        quizFireworksFrame = requestAnimationFrame(frame);
-      } else {
-        stopQuizFireworks();
-      }
+      quizFireworksFrame = requestAnimationFrame(frame);
     }
 
     addBurst();
-    burstCount = 1;
     quizFireworksFrame = requestAnimationFrame(frame);
   }
 
