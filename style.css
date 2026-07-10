@@ -1196,7 +1196,7 @@ select,
   align-self: flex-start;
   margin-top: auto;
   margin-left: 6px;
-  margin-bottom: 8px;
+  margin-bottom: 18px;
   flex-shrink: 0;
   z-index: 2;
 }
@@ -1383,7 +1383,7 @@ select,
 }
 
 .quiz-screen--divide.quiz-digits-4 .quiz-badge-img {
-  top: 88px;
+  top: 98px;
   width: 64px;
   height: 64px;
 }
@@ -1410,7 +1410,7 @@ select,
 
 .quiz-screen--divide.quiz-digits-4 .quiz-problem {
   margin-top: 0;
-  padding-left: 24px;
+  padding-left: 34px;
   padding-bottom: 0;
   flex-shrink: 1;
   min-height: 0;
