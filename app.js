@@ -2537,7 +2537,7 @@
     var dpr;
     var ctx;
     var particles = [];
-    var colors = ["#e63b3b", "#ff8a6a", "#ffd166", "#4ecdc4", "#ff6b9d", "#ffe66d", "#ffffff"];
+    var colors = ["#ff1a1a", "#ff4500", "#ffb300", "#00c9b7", "#ff1493", "#ffe600", "#ffffff"];
     var burstInterval = 380;
     var width;
     var height;
