@@ -2092,30 +2092,32 @@
   }
 
   function getDivideGridMetrics(cols, digitLevel) {
-    var layout = DIVIDE_LAYOUT;
-    var cell = layout.cell;
-    var gap = layout.gap;
-    var side = layout.side;
-    var bracket = layout.bracket;
+    var cell;
+    var gap = 1;
+    var side;
+    var bracket;
+
+    if (digitLevel === 4) {
+      return {
+        side: 20,
+        bracket: 15,
+        cell: 20,
+        gap: 1
+      };
+    }
 
     if (digitLevel === 1) {
       cell = 30;
-      side = 26;
-      bracket = 20;
     } else if (digitLevel === 2) {
       cell = 26;
-      side = 24;
-      bracket = 19;
-      gap = 4;
-    } else if (digitLevel === 4) {
-      cell = 20;
-      gap = 1;
-      side = 20;
-      bracket = 15;
     } else if (cols >= 4) {
       cell = 24;
-      gap = 2;
+    } else {
+      cell = 26;
     }
+
+    side = cell;
+    bracket = Math.round(cell * 0.75);
 
     return {
       side: side,
@@ -2188,7 +2190,7 @@
     grid.style.gridTemplateColumns =
       metrics.side + "px " + metrics.bracket + "px repeat(" + layout.cols + ", " + metrics.cell + "px)";
     grid.style.columnGap = metrics.gap + "px";
-    grid.style.rowGap = currentQuizState.digits === 4 ? "1px" : "2px";
+    grid.style.rowGap = "1px";
     grid.style.setProperty(
       "--divide-hline-width",
       metrics.bracket + layout.cols * metrics.cell + Math.max(0, layout.cols - 1) * metrics.gap + "px"

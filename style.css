@@ -1195,7 +1195,7 @@ select,
   position: static;
   align-self: flex-start;
   margin-top: auto;
-  margin-left: 32px;
+  margin-left: 44px;
   margin-bottom: 18px;
   flex-shrink: 0;
   z-index: 2;
@@ -1208,7 +1208,7 @@ select,
 .quiz-screen--divide.quiz-digits-3 .quiz-submit {
   position: absolute;
   left: 6px;
-  top: 227px;
+  top: 238px;
   margin-top: 0;
   flex-shrink: 0;
   z-index: 2;
@@ -1216,6 +1216,11 @@ select,
 
 .quiz-screen--divide.quiz-digits-3 .quiz-problem {
   padding-left: 46px;
+}
+
+.quiz-screen--divide.quiz-digits-3 .quiz-grid--divide {
+  column-gap: 1px;
+  row-gap: 1px;
 }
 
 .quiz-grid--divide {
@@ -1319,6 +1324,19 @@ select,
   flex-shrink: 0;
 }
 
+.quiz-screen--divide.quiz-digits-1 .quiz-grid--divide {
+  column-gap: 1px;
+  row-gap: 1px;
+}
+
+.quiz-screen--divide.quiz-digits-1 .quiz-divide-side {
+  width: 30px;
+}
+
+.quiz-screen--divide.quiz-digits-1 .quiz-divide-bracket {
+  width: 22px;
+}
+
 .quiz-screen--divide.quiz-digits-1 .quiz-grid--divide .quiz-digit,
 .quiz-screen--divide.quiz-digits-1 .quiz-grid--divide .quiz-divide-divisor {
   width: 30px;
@@ -1353,11 +1371,12 @@ select,
 }
 
 .quiz-screen--divide.quiz-digits-2 .quiz-grid--divide {
-  column-gap: 4px;
+  column-gap: 1px;
+  row-gap: 1px;
 }
 
 .quiz-screen--divide.quiz-digits-2 .quiz-divide-side {
-  width: 24px;
+  width: 26px;
 }
 
 .quiz-screen--divide.quiz-digits-2 .quiz-divide-bracket {
@@ -1385,6 +1404,11 @@ select,
 
 .quiz-screen--divide .quiz-submit {
   margin-top: 8px;
+}
+
+.quiz-screen--divide.quiz-digits-4 .quiz-grid--divide {
+  column-gap: 1px;
+  row-gap: 1px;
 }
 
 .quiz-screen--divide.quiz-digits-4 .quiz-body {
