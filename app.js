@@ -2120,46 +2120,61 @@
     fitQuizProblemGrid(gridId);
   }
 
-  function getDivideGridMetrics(cols, digitLevel) {
+  function getDivideGridMetrics(cols, digitLevel, divisorStr) {
+    var divisorLen = Math.max(1, String(divisorStr || "").length);
+    var maxCols = Math.max(1, cols);
     var cell;
-    var gap = 1;
+    var gap;
+    var font;
     var side;
     var bracket;
+    var totalWidth;
+    var maxWidth;
+    var shrink;
 
     if (digitLevel === 4) {
-      return {
-        side: 20,
-        bracket: 15,
-        cell: 20,
-        gap: 1
-      };
-    }
-
-    if (digitLevel === 2) {
-      return {
-        side: 20,
-        bracket: 20,
-        cell: 26,
-        gap: 3
-      };
-    }
-
-    if (digitLevel === 1) {
-      cell = 30;
-    } else if (cols >= 4) {
-      cell = 24;
-    } else {
+      cell = 20;
+      gap = 1;
+      font = 18;
+      maxWidth = 214;
+    } else if (digitLevel === 2) {
       cell = 26;
+      gap = 3;
+      font = 26;
+      maxWidth = 196;
+    } else if (digitLevel === 1) {
+      cell = 30;
+      gap = 1;
+      font = 30;
+      maxWidth = 180;
+    } else {
+      cell = maxCols >= 5 ? 22 : maxCols >= 4 ? 24 : 26;
+      gap = 1;
+      font = cell;
+      maxWidth = 200;
     }
 
-    side = cell;
-    bracket = Math.round(cell * 0.75);
+    side = cell * divisorLen + gap * Math.max(0, divisorLen - 1);
+    bracket = Math.max(8, Math.round(cell * 0.34));
+
+    totalWidth = side + bracket + maxCols * cell + Math.max(0, maxCols - 1) * gap;
+
+    if (totalWidth > maxWidth) {
+      shrink = maxWidth / totalWidth;
+      cell = Math.max(16, Math.floor(cell * shrink));
+      font = Math.max(14, Math.floor(font * shrink));
+      gap = Math.max(1, Math.round(gap * shrink));
+      side = cell * divisorLen + gap * Math.max(0, divisorLen - 1);
+      bracket = Math.max(6, Math.round(cell * 0.34));
+    }
 
     return {
       side: side,
       bracket: bracket,
       cell: cell,
-      gap: gap
+      gap: gap,
+      font: font,
+      divisorLen: divisorLen
     };
   }
 
@@ -2216,7 +2231,7 @@
     var grid = document.getElementById(gridId);
     var readOnly = options && options.readOnly;
     var answerIndex = 0;
-    var metrics = getDivideGridMetrics(layout.cols, currentQuizState.digits);
+    var metrics = getDivideGridMetrics(layout.cols, currentQuizState.digits, layout.divisor);
     var i;
     var row;
 
@@ -2227,9 +2242,19 @@
       metrics.side + "px " + metrics.bracket + "px repeat(" + layout.cols + ", " + metrics.cell + "px)";
     grid.style.columnGap = metrics.gap + "px";
     grid.style.rowGap = currentQuizState.digits === 2 ? "2px" : "1px";
+    grid.style.setProperty("--divide-side-width", metrics.side + "px");
+    grid.style.setProperty("--divide-bracket-width", metrics.bracket + "px");
+    grid.style.setProperty("--divide-cell-width", metrics.cell + "px");
+    grid.style.setProperty("--divide-cell-height", metrics.cell + "px");
+    grid.style.setProperty("--divide-cell-font", metrics.font + "px");
+    grid.style.setProperty("--divide-gap", metrics.gap + "px");
+    grid.style.setProperty(
+      "--divide-answer-font",
+      Math.max(12, Math.round(metrics.font * 0.68)) + "px"
+    );
     grid.style.setProperty(
       "--divide-hline-width",
-      metrics.bracket + layout.cols * metrics.cell + Math.max(0, layout.cols - 1) * metrics.gap + "px"
+      layout.cols * metrics.cell + Math.max(0, layout.cols - 1) * metrics.gap + "px"
     );
 
     for (i = 0; i < layout.rows.length; i += 1) {
