@@ -300,7 +300,7 @@ select,
   text-align: center;
   flex-shrink: 0;
   position: relative;
-  top: 6px;
+  top: 12px;
 }
 
 .signup-link a {
@@ -470,7 +470,7 @@ select,
   text-align: center;
   flex-shrink: 0;
   position: relative;
-  top: 6px;
+  top: 12px;
 }
 
 #screen-2 .exit-link {
@@ -738,7 +738,7 @@ select,
   text-align: center;
   flex-shrink: 0;
   position: relative;
-  top: 6px;
+  top: 12px;
 }
 
 .difficulty-exit button {
@@ -1850,7 +1850,7 @@ select,
   margin-top: auto;
   flex-shrink: 0;
   position: relative;
-  top: 6px;
+  top: 12px;
 }
 
 /* ===== 관리자 화면 (16번) ===== */
@@ -1929,7 +1929,7 @@ select,
   padding-top: 6px;
   flex-shrink: 0;
   position: relative;
-  top: 6px;
+  top: 12px;
 }
 
 .admin-exit button {
