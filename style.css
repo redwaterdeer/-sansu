@@ -1195,7 +1195,7 @@ select,
   position: static;
   align-self: flex-start;
   margin-top: auto;
-  margin-left: 44px;
+  margin-left: 52px;
   margin-bottom: 18px;
   flex-shrink: 0;
   z-index: 2;
@@ -1371,12 +1371,12 @@ select,
 }
 
 .quiz-screen--divide.quiz-digits-2 .quiz-grid--divide {
-  column-gap: 1px;
-  row-gap: 1px;
+  column-gap: 4px;
+  row-gap: 2px;
 }
 
 .quiz-screen--divide.quiz-digits-2 .quiz-divide-side {
-  width: 26px;
+  width: 24px;
 }
 
 .quiz-screen--divide.quiz-digits-2 .quiz-divide-bracket {
@@ -1419,7 +1419,7 @@ select,
 }
 
 .quiz-screen--divide.quiz-digits-4 .quiz-badge-img {
-  top: 98px;
+  top: 110px;
   width: 64px;
   height: 64px;
 }

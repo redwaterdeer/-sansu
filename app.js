@@ -2106,10 +2106,17 @@
       };
     }
 
+    if (digitLevel === 2) {
+      return {
+        side: 24,
+        bracket: 19,
+        cell: 26,
+        gap: 4
+      };
+    }
+
     if (digitLevel === 1) {
       cell = 30;
-    } else if (digitLevel === 2) {
-      cell = 26;
     } else if (cols >= 4) {
       cell = 24;
     } else {
@@ -2190,7 +2197,7 @@
     grid.style.gridTemplateColumns =
       metrics.side + "px " + metrics.bracket + "px repeat(" + layout.cols + ", " + metrics.cell + "px)";
     grid.style.columnGap = metrics.gap + "px";
-    grid.style.rowGap = "1px";
+    grid.style.rowGap = currentQuizState.digits === 2 ? "2px" : "1px";
     grid.style.setProperty(
       "--divide-hline-width",
       metrics.bracket + layout.cols * metrics.cell + Math.max(0, layout.cols - 1) * metrics.gap + "px"
