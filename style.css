@@ -295,6 +295,10 @@ select,
   height: 100%;
 }
 
+.field-secret {
+  -webkit-text-security: disc;
+}
+
 .signup-link {
   margin-top: 10px;
   text-align: center;

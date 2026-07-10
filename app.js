@@ -264,7 +264,7 @@
       element &&
       loginForm &&
       loginForm.contains(element) &&
-      (element.name === "name" || element.name === "password")
+      (element.name === "student-name" || element.name === "login-secret")
     );
   }
 
@@ -373,7 +373,7 @@
   }
 
   function setupLoginKeyboardLift() {
-    var inputs = loginForm.querySelectorAll('input[name="name"], input[name="password"]');
+    var inputs = loginForm.querySelectorAll('input[name="student-name"], input[name="login-secret"]');
 
     inputs.forEach(function (input) {
       input.addEventListener("focus", function () {
@@ -457,19 +457,22 @@
     }
 
     loginForm.setAttribute("autocomplete", "off");
-    inputs = loginForm.querySelectorAll('input[name="name"], input[name="password"]');
+    inputs = loginForm.querySelectorAll('input[name="student-name"], input[name="login-secret"]');
 
     for (i = 0; i < inputs.length; i += 1) {
       input = inputs[i];
       input.setAttribute("autocomplete", "off");
       input.setAttribute("readonly", "readonly");
       input.addEventListener(
-        "focus",
+        "touchstart",
         function (event) {
           event.target.removeAttribute("readonly");
         },
-        { once: true }
+        { passive: true }
       );
+      input.addEventListener("mousedown", function (event) {
+        event.target.removeAttribute("readonly");
+      });
     }
   }
 
@@ -2772,8 +2775,8 @@
   }
 
   function handleLogin() {
-    var name = loginForm.name.value.trim();
-    var password = loginForm.password.value.trim();
+    var name = loginForm["student-name"].value.trim();
+    var password = loginForm["login-secret"].value.trim();
 
     if (!name || !password) {
       alert("이름과 비밀번호를 입력해 주세요.");
