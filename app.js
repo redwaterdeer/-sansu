@@ -2497,17 +2497,26 @@
     updateQuizNumberDisplay();
     renderQuizGrid("quiz-correct-grid", userValues, null, { readOnly: true });
     showScreen("screen-quiz-correct");
-    requestAnimationFrame(function () {
+    setTimeout(function () {
       playQuizFireworks();
-    });
+    }, 60);
   }
 
   var quizFireworksFrame = null;
+  var quizFireworksBurstTimer = null;
+  var quizFireworksActive = false;
 
   function stopQuizFireworks() {
+    quizFireworksActive = false;
+
     if (quizFireworksFrame) {
       cancelAnimationFrame(quizFireworksFrame);
       quizFireworksFrame = null;
+    }
+
+    if (quizFireworksBurstTimer) {
+      clearInterval(quizFireworksBurstTimer);
+      quizFireworksBurstTimer = null;
     }
 
     var canvas = document.getElementById("quiz-fireworks");
@@ -2529,7 +2538,6 @@
     var ctx;
     var particles = [];
     var colors = ["#e63b3b", "#ff8a6a", "#ffd166", "#4ecdc4", "#ff6b9d", "#ffe66d", "#ffffff"];
-    var lastBurstTime = 0;
     var burstInterval = 380;
     var width;
     var height;
@@ -2539,6 +2547,7 @@
     }
 
     stopQuizFireworks();
+    quizFireworksActive = true;
 
     rect = screen.getBoundingClientRect();
     dpr = window.devicePixelRatio || 1;
@@ -2551,12 +2560,17 @@
 
     ctx = canvas.getContext("2d");
     if (!ctx) {
+      quizFireworksActive = false;
       return;
     }
 
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
     function addBurst() {
+      if (!quizFireworksActive) {
+        return;
+      }
+
       var x = width * (0.2 + Math.random() * 0.6);
       var y = height * (0.18 + Math.random() * 0.38);
       var color = colors[Math.floor(Math.random() * colors.length)];
@@ -2578,22 +2592,21 @@
           size: 1.5 + Math.random() * 2.5
         });
       }
+
+      if (particles.length > 420) {
+        particles.splice(0, particles.length - 420);
+      }
     }
 
-    function frame(now) {
+    function frame() {
       var i;
       var particle;
 
-      if (!lastBurstTime) {
-        lastBurstTime = now;
+      if (!quizFireworksActive) {
+        return;
       }
 
       ctx.clearRect(0, 0, width, height);
-
-      if (now - lastBurstTime >= burstInterval) {
-        addBurst();
-        lastBurstTime = now;
-      }
 
       for (i = particles.length - 1; i >= 0; i -= 1) {
         particle = particles[i];
@@ -2620,6 +2633,7 @@
     }
 
     addBurst();
+    quizFireworksBurstTimer = setInterval(addBurst, burstInterval);
     quizFireworksFrame = requestAnimationFrame(frame);
   }
 
