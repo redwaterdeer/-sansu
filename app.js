@@ -2104,8 +2104,9 @@
       bracket = 20;
     } else if (digitLevel === 2) {
       cell = 26;
-      side = 22;
-      bracket = 17;
+      side = 24;
+      bracket = 19;
+      gap = 4;
     } else if (digitLevel === 4) {
       cell = 20;
       gap = 1;
