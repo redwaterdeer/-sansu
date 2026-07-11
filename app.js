@@ -448,8 +448,15 @@
 
   function preventLoginAutofillPopup() {
     var inputs;
+    var fields;
     var i;
     var input;
+
+    function unlockLoginInput(target) {
+      if (target && target.hasAttribute && target.hasAttribute("readonly")) {
+        target.removeAttribute("readonly");
+      }
+    }
 
     if (!loginForm) {
       return;
@@ -457,21 +464,54 @@
 
     loginForm.setAttribute("autocomplete", "off");
     inputs = loginForm.querySelectorAll('input[name="student-name"], input[name="login-secret"]');
+    fields = loginForm.querySelectorAll(".field");
 
     for (i = 0; i < inputs.length; i += 1) {
       input = inputs[i];
       input.setAttribute("autocomplete", "off");
       input.setAttribute("readonly", "readonly");
-      input.addEventListener(
-        "touchstart",
+
+      // 포커스보다 먼저 readonly 해제해야 모바일 키보드가 뜸
+      // (라벨/필드 영역 탭 시 input touchstart가 안 타는 경우 포함)
+      (function (lockedInput) {
+        function unlock() {
+          unlockLoginInput(lockedInput);
+        }
+
+        lockedInput.addEventListener("pointerdown", unlock, true);
+        lockedInput.addEventListener("touchstart", unlock, { passive: true, capture: true });
+        lockedInput.addEventListener("mousedown", unlock, true);
+        lockedInput.addEventListener("focus", function () {
+          var wasReadonly = lockedInput.hasAttribute("readonly");
+          unlockLoginInput(lockedInput);
+          if (wasReadonly) {
+            setTimeout(function () {
+              if (document.activeElement === lockedInput) {
+                lockedInput.blur();
+                lockedInput.focus();
+              }
+            }, 0);
+          }
+        });
+        lockedInput.addEventListener("blur", function () {
+          setTimeout(function () {
+            if (document.activeElement !== lockedInput) {
+              lockedInput.setAttribute("readonly", "readonly");
+            }
+          }, 50);
+        });
+      })(input);
+    }
+
+    for (i = 0; i < fields.length; i += 1) {
+      fields[i].addEventListener(
+        "pointerdown",
         function (event) {
-          event.target.removeAttribute("readonly");
+          var nested = event.currentTarget.querySelector("input");
+          unlockLoginInput(nested);
         },
-        { passive: true }
+        true
       );
-      input.addEventListener("mousedown", function (event) {
-        event.target.removeAttribute("readonly");
-      });
     }
   }
 
