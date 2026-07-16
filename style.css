@@ -99,8 +99,8 @@ select,
   min-width: 0;
   min-height: 0;
   overflow: hidden;
-  transform: translateY(calc(-1 * var(--phone-lift)));
-  transition: transform 0.18s ease;
+  /* transform 대신 margin — 포커스 중 transform 변경 시 모바일 키보드가 닫힘 */
+  margin-top: calc(-1 * var(--phone-lift));
 }
 
 .phone {
@@ -1160,7 +1160,46 @@ select,
 }
 
 .quiz-grid--multiply {
-  row-gap: 4px;
+  row-gap: var(--multiply-row-gap, 4px);
+  column-gap: var(--multiply-gap, 4px);
+}
+
+.quiz-grid--multiply .quiz-op-cell {
+  width: var(--multiply-op-width, 28px);
+  min-height: var(--multiply-cell-height, 34px);
+  font-size: var(--multiply-cell-font, 30px);
+}
+
+.quiz-grid--multiply .quiz-digit {
+  width: var(--multiply-cell-width, 34px);
+  font-size: var(--multiply-cell-font, 34px);
+}
+
+.quiz-grid--multiply .quiz-line-full {
+  height: var(--multiply-line-height, 3px);
+  min-height: var(--multiply-line-height, 3px);
+  margin: var(--multiply-line-margin, 4px) 0;
+}
+
+.quiz-grid--multiply .quiz-multiply-spacer {
+  width: var(--multiply-cell-width, 34px);
+  height: var(--multiply-cell-height, 34px);
+  justify-self: center;
+}
+
+.quiz-grid--multiply .quiz-answer-box,
+.quiz-grid--multiply .quiz-answer-display,
+.quiz-grid--multiply .quiz-answer-picker,
+.quiz-grid--multiply .quiz-answer-picker-trigger {
+  width: var(--multiply-cell-width, 34px);
+  height: var(--multiply-cell-height, 34px);
+}
+
+.quiz-grid--multiply .quiz-answer-box,
+.quiz-grid--multiply .quiz-answer-display,
+.quiz-grid--multiply .quiz-answer-picker-trigger {
+  font-size: var(--multiply-answer-font, 22px);
+  line-height: var(--multiply-cell-height, 34px);
 }
 
 .quiz-multiply-spacer {
@@ -1184,6 +1223,50 @@ select,
 
 .quiz-screen--multiply .quiz-submit {
   margin-top: 8px;
+}
+
+.quiz-screen--multiply.quiz-digits-2 .quiz-problem,
+.quiz-screen--multiply.quiz-digits-3 .quiz-problem,
+.quiz-screen--multiply.quiz-digits-4 .quiz-problem {
+  margin-top: 12px;
+  flex-shrink: 1;
+  min-height: 0;
+}
+
+.quiz-screen--multiply.quiz-digits-2 .quiz-body,
+.quiz-screen--multiply.quiz-digits-3 .quiz-body,
+.quiz-screen--multiply.quiz-digits-4 .quiz-body {
+  min-height: 0;
+  overflow: visible;
+}
+
+.quiz-screen--multiply.quiz-digits-2 .quiz-badge-img,
+.quiz-screen--multiply.quiz-digits-3 .quiz-badge-img,
+.quiz-screen--multiply.quiz-digits-4 .quiz-badge-img {
+  width: 64px;
+  height: 64px;
+  top: 0;
+  z-index: 0;
+}
+
+.quiz-screen--multiply.quiz-digits-2 .quiz-submit,
+.quiz-screen--multiply.quiz-digits-3 .quiz-submit,
+.quiz-screen--multiply.quiz-digits-4 .quiz-submit,
+#screen-quiz.quiz-screen--multiply.quiz-digits-2 .quiz-submit,
+#screen-quiz.quiz-screen--multiply.quiz-digits-3 .quiz-submit,
+#screen-quiz.quiz-screen--multiply.quiz-digits-4 .quiz-submit,
+#screen-quiz-wrong.quiz-screen--multiply.quiz-digits-2 .quiz-submit,
+#screen-quiz-wrong.quiz-screen--multiply.quiz-digits-3 .quiz-submit,
+#screen-quiz-wrong.quiz-screen--multiply.quiz-digits-4 .quiz-submit,
+#screen-quiz-correct.quiz-screen--multiply.quiz-digits-2 .quiz-submit,
+#screen-quiz-correct.quiz-screen--multiply.quiz-digits-3 .quiz-submit,
+#screen-quiz-correct.quiz-screen--multiply.quiz-digits-4 .quiz-submit {
+  position: relative;
+  z-index: 3;
+  margin-top: auto;
+  margin-bottom: 4px;
+  flex-shrink: 0;
+  align-self: center;
 }
 
 .quiz-screen--divide .quiz-problem {

@@ -379,10 +379,8 @@
           parseFloat(
             getComputedStyle(document.documentElement).getPropertyValue("--phone-scale")
           ) || 1;
-
-        requestAnimationFrame(function () {
-          requestAnimationFrame(alignLoginFieldForKeyboard);
-        });
+        // 키보드가 실제로 열린 뒤(visualViewport resize)에만 올림 →
+        // 포커스 직후 transform 변경으로 키보드가 닫히는 것 방지
       });
 
       input.addEventListener("blur", function () {
@@ -447,14 +445,12 @@
   var loginForm = document.getElementById("login-form");
 
   function preventLoginAutofillPopup() {
-    var inputs;
-    var fields;
-    var i;
-    var input;
+    var nameInput;
+    var secretInput;
 
-    function unlockLoginInput(target) {
-      if (target && target.hasAttribute && target.hasAttribute("readonly")) {
-        target.removeAttribute("readonly");
+    function unlockSecretInput() {
+      if (secretInput && secretInput.hasAttribute("readonly")) {
+        secretInput.removeAttribute("readonly");
       }
     }
 
@@ -463,55 +459,33 @@
     }
 
     loginForm.setAttribute("autocomplete", "off");
-    inputs = loginForm.querySelectorAll('input[name="student-name"], input[name="login-secret"]');
-    fields = loginForm.querySelectorAll(".field");
+    nameInput = loginForm.querySelector('input[name="student-name"]');
+    secretInput = loginForm.querySelector('input[name="login-secret"]');
 
-    for (i = 0; i < inputs.length; i += 1) {
-      input = inputs[i];
-      input.setAttribute("autocomplete", "off");
-      input.setAttribute("readonly", "readonly");
-
-      // 포커스보다 먼저 readonly 해제해야 모바일 키보드가 뜸
-      // (라벨/필드 영역 탭 시 input touchstart가 안 타는 경우 포함)
-      (function (lockedInput) {
-        function unlock() {
-          unlockLoginInput(lockedInput);
-        }
-
-        lockedInput.addEventListener("pointerdown", unlock, true);
-        lockedInput.addEventListener("touchstart", unlock, { passive: true, capture: true });
-        lockedInput.addEventListener("mousedown", unlock, true);
-        lockedInput.addEventListener("focus", function () {
-          var wasReadonly = lockedInput.hasAttribute("readonly");
-          unlockLoginInput(lockedInput);
-          if (wasReadonly) {
-            setTimeout(function () {
-              if (document.activeElement === lockedInput) {
-                lockedInput.blur();
-                lockedInput.focus();
-              }
-            }, 0);
-          }
-        });
-        lockedInput.addEventListener("blur", function () {
-          setTimeout(function () {
-            if (document.activeElement !== lockedInput) {
-              lockedInput.setAttribute("readonly", "readonly");
-            }
-          }, 50);
-        });
-      })(input);
+    // 이름: readonly를 쓰면 첫 탭에서 키보드가 안 뜸 → 절대 걸지 않음
+    if (nameInput) {
+      nameInput.removeAttribute("readonly");
+      nameInput.setAttribute("autocomplete", "off");
+      nameInput.setAttribute("inputmode", "text");
     }
 
-    for (i = 0; i < fields.length; i += 1) {
-      fields[i].addEventListener(
-        "pointerdown",
-        function (event) {
-          var nested = event.currentTarget.querySelector("input");
-          unlockLoginInput(nested);
-        },
-        true
-      );
+    // 비밀번호만 자동완성 방지용 readonly (탭 직전에 해제)
+    if (secretInput) {
+      secretInput.setAttribute("autocomplete", "off");
+      secretInput.setAttribute("inputmode", "text");
+      secretInput.setAttribute("readonly", "readonly");
+
+      loginForm.addEventListener("pointerdown", unlockSecretInput, true);
+      loginForm.addEventListener("touchstart", unlockSecretInput, { passive: true, capture: true });
+      loginForm.addEventListener("mousedown", unlockSecretInput, true);
+      secretInput.addEventListener("focus", unlockSecretInput);
+      secretInput.addEventListener("blur", function () {
+        setTimeout(function () {
+          if (document.activeElement !== secretInput) {
+            secretInput.setAttribute("readonly", "readonly");
+          }
+        }, 50);
+      });
     }
   }
 
@@ -2082,6 +2056,61 @@
     grid.appendChild(spacer);
   }
 
+  function getMultiplyGridMetrics(digitLevel, cols) {
+    var cell;
+    var op;
+    var gap;
+    var rowGap;
+    var font;
+    var answerFont;
+
+    if (digitLevel === 4) {
+      cell = 20;
+      op = 18;
+      gap = 2;
+      rowGap = 2;
+      font = 20;
+      answerFont = 14;
+    } else if (digitLevel === 3) {
+      cell = 22;
+      op = 20;
+      gap = 2;
+      rowGap = 2;
+      font = 22;
+      answerFont = 15;
+    } else if (digitLevel === 2) {
+      cell = 24;
+      op = 22;
+      gap = 2;
+      rowGap = 2;
+      font = 24;
+      answerFont = 16;
+    } else {
+      cell = 34;
+      op = 28;
+      gap = 4;
+      rowGap = 4;
+      font = 34;
+      answerFont = 22;
+    }
+
+    if (cols >= 5 && cell > 18) {
+      cell -= 2;
+      font = Math.max(16, font - 2);
+      answerFont = Math.max(12, answerFont - 1);
+      op = Math.max(16, op - 2);
+    }
+
+    return {
+      cell: cell,
+      op: op,
+      gap: gap,
+      rowGap: rowGap,
+      font: font,
+      answerFont: answerFont
+    };
+  }
+
   function renderMultiplyLayout(gridId, a, b, cols, answers, feedback, options) {
     var grid = document.getElementById(gridId);
     var rows = buildMultiplyRows(a, b, cols);
@@ -2089,6 +2118,7 @@
     var aDigits = padDigits(a, cols);
     var bDigits = padDigits(b, cols);
     var readOnly = options && options.readOnly;
+    var metrics = getMultiplyGridMetrics(currentQuizState.digits, cols);
     var answerIndex = 0;
     var line;
     var i;
@@ -2098,7 +2128,19 @@
     grid.innerHTML = "";
     grid.classList.remove("quiz-grid--divide");
     grid.classList.add("quiz-grid--multiply");
-    grid.style.gridTemplateColumns = "28px repeat(" + cols + ", 34px)";
+    grid.style.gridTemplateColumns =
+      metrics.op + "px repeat(" + cols + ", " + metrics.cell + "px)";
+    grid.style.columnGap = metrics.gap + "px";
+    grid.style.rowGap = metrics.rowGap + "px";
+    grid.style.setProperty("--multiply-gap", metrics.gap + "px");
+    grid.style.setProperty("--multiply-row-gap", metrics.rowGap + "px");
+    grid.style.setProperty("--multiply-cell-width", metrics.cell + "px");
+    grid.style.setProperty("--multiply-cell-height", metrics.cell + "px");
+    grid.style.setProperty("--multiply-op-width", metrics.op + "px");
+    grid.style.setProperty("--multiply-cell-font", metrics.font + "px");
+    grid.style.setProperty("--multiply-answer-font", metrics.answerFont + "px");
+    grid.style.setProperty("--multiply-line-height", Math.max(2, Math.round(metrics.cell * 0.1)) + "px");
+    grid.style.setProperty("--multiply-line-margin", Math.max(1, Math.round(metrics.rowGap * 0.5)) + "px");
 
     var opEmptyTop = document.createElement("span");
     opEmptyTop.className = "quiz-op-cell";
@@ -2372,6 +2414,9 @@
     var available;
     var gridHeight;
     var scale;
+    var isMultiplyCompact;
+    var minScale;
+    var submitReserve;
 
     if (!grid) {
       return;
@@ -2391,15 +2436,23 @@
     problem.style.transform = "";
     problem.style.marginBottom = "";
 
+    isMultiplyCompact =
+      screen.classList.contains("quiz-screen--multiply") &&
+      (screen.classList.contains("quiz-digits-2") ||
+        screen.classList.contains("quiz-digits-3") ||
+        screen.classList.contains("quiz-digits-4"));
+
     submit = body.querySelector(".quiz-submit");
+    submitReserve = isMultiplyCompact ? 14 : 6;
     available = body.clientHeight - (problem.offsetTop - body.offsetTop) - 4;
     if (submit) {
-      available -= submit.offsetHeight + 6;
+      available -= submit.offsetHeight + submitReserve;
     }
 
     gridHeight = grid.offsetHeight;
+    minScale = isMultiplyCompact ? 0.58 : 0.78;
     if (gridHeight > available && available > 40) {
-      scale = Math.max(0.78, available / gridHeight);
+      scale = Math.max(minScale, available / gridHeight);
       problem.style.transform = "scale(" + scale + ")";
       problem.style.transformOrigin = "top center";
       problem.style.marginBottom = gridHeight * scale - gridHeight + "px";
