@@ -12,6 +12,7 @@
     isMaster: true
   };
   var ageValue = 1;
+  var loginForm = document.getElementById("login-form");
 
   function getUsers() {
     try {
@@ -75,9 +76,11 @@
     var secretInput = document.getElementById("login-secret");
     if (nameInput) {
       nameInput.value = "";
+      nameInput.setAttribute("readonly", "readonly");
     }
     if (secretInput) {
-      secretInput.value = "";
+      clearMaskedField(secretInput);
+      secretInput.setAttribute("readonly", "readonly");
     }
     currentUserName = "";
     isCurrentUserMaster = false;
@@ -271,8 +274,154 @@
       element &&
       loginForm &&
       loginForm.contains(element) &&
-      (element.name === "student-name" || element.name === "login-secret")
+      (element.id === "login-name" || element.id === "login-secret")
     );
+  }
+
+  function getMaskedFieldValue(input) {
+    if (!input) {
+      return "";
+    }
+    if (typeof input._realValue === "string") {
+      return input._realValue;
+    }
+    return input.value || "";
+  }
+
+  function clearMaskedField(input) {
+    if (!input) {
+      return;
+    }
+    input._realValue = "";
+    input.value = "";
+  }
+
+  function setupJsPasswordMask(input) {
+    if (!input || input._maskBound) {
+      return;
+    }
+
+    input._maskBound = true;
+    input._realValue = "";
+    input.setAttribute("autocomplete", "off");
+
+    input.addEventListener("input", function () {
+      var displayed = input.value;
+      var prev = input._realValue || "";
+      var next = prev;
+      var nonBullet = displayed.replace(/●/g, "");
+
+      if (displayed.length === 0) {
+        next = "";
+      } else if (displayed.length < prev.length) {
+        next = prev.slice(0, displayed.length);
+      } else if (displayed.length > prev.length) {
+        next = prev + (nonBullet || displayed.slice(prev.length));
+        if (next.length > displayed.length) {
+          next = next.slice(0, displayed.length);
+        }
+      } else if (nonBullet) {
+        next = prev.slice(0, Math.max(0, displayed.length - nonBullet.length)) + nonBullet;
+        if (next.length > displayed.length) {
+          next = next.slice(0, displayed.length);
+        }
+      }
+
+      input._realValue = next;
+      input.value = next ? Array(next.length + 1).join("●") : "";
+      try {
+        var pos = input.value.length;
+        input.setSelectionRange(pos, pos);
+      } catch (err) {
+        /* ignore */
+      }
+    });
+  }
+
+  function unlockLoginFieldInput(input) {
+    if (!input) {
+      return;
+    }
+    input.removeAttribute("readonly");
+  }
+
+  function preventLoginAutofillPopup() {
+    var nameInput;
+    var secretInput;
+    var signupPassword;
+
+    if (!loginForm) {
+      return;
+    }
+
+    nameInput = document.getElementById("login-name");
+    secretInput = document.getElementById("login-secret");
+    signupPassword = document.getElementById("signup-password");
+
+    [nameInput, secretInput, signupPassword].forEach(function (input) {
+      if (!input) {
+        return;
+      }
+      if (input.type === "password") {
+        input.type = "text";
+      }
+      input.classList.remove("field-secret");
+      input.setAttribute("autocomplete", "off");
+      input.setAttribute("autocapitalize", "off");
+      input.setAttribute("autocorrect", "off");
+      input.setAttribute("spellcheck", "false");
+      input.setAttribute("data-lpignore", "true");
+      input.setAttribute("data-1p-ignore", "true");
+      input.setAttribute("data-form-type", "other");
+      input.setAttribute("readonly", "readonly");
+    });
+
+    if (secretInput) {
+      setupJsPasswordMask(secretInput);
+      secretInput.setAttribute("readonly", "readonly");
+    }
+    if (signupPassword) {
+      setupJsPasswordMask(signupPassword);
+      signupPassword.setAttribute("readonly", "readonly");
+    }
+
+    function unlockFromEvent(event) {
+      var field;
+      var input;
+
+      if (!event || !event.target || !event.target.closest) {
+        return;
+      }
+
+      field = event.target.closest(".field, .signup-field");
+      if (!field) {
+        return;
+      }
+
+      input = field.querySelector("input");
+      if (!input) {
+        return;
+      }
+
+      unlockLoginFieldInput(input);
+    }
+
+    document.addEventListener("touchstart", unlockFromEvent, { passive: true, capture: true });
+    document.addEventListener("pointerdown", unlockFromEvent, true);
+    document.addEventListener("mousedown", unlockFromEvent, true);
+
+    // 필드 영역 탭 시 입력칸 포커스 (label 대신 div 사용)
+    if (loginForm) {
+      loginForm.querySelectorAll(".field").forEach(function (field) {
+        field.addEventListener("click", function () {
+          var input = field.querySelector("input");
+          if (input) {
+            unlockLoginFieldInput(input);
+            input.focus();
+          }
+        });
+      });
+    }
   }
 
   function resetLoginKeyboardLift(shouldUpdateScale) {
@@ -373,7 +522,7 @@
   }
 
   function setupLoginKeyboardLift() {
-    var inputs = loginForm.querySelectorAll('input[name="student-name"], input[name="login-secret"]');
+    var inputs = loginForm.querySelectorAll("#login-name, #login-secret");
 
     inputs.forEach(function (input) {
       input.addEventListener("focus", function () {
@@ -408,7 +557,12 @@
 
   function resetSignupForm() {
     var signupForm = document.getElementById("signup-form");
+    var signupPassword = document.getElementById("signup-password");
     signupForm.reset();
+    clearMaskedField(signupPassword);
+    if (signupPassword) {
+      signupPassword.setAttribute("readonly", "readonly");
+    }
     ageValue = 1;
     updateAgeDisplay();
   }
@@ -448,48 +602,6 @@
     setTimeout(updatePhoneScale, 300);
     setTimeout(updatePhoneScale, 800);
   });
-
-  var loginForm = document.getElementById("login-form");
-
-  function preventLoginAutofillPopup() {
-    var nameInput;
-    var secretInput;
-    var signupPassword;
-
-    if (!loginForm) {
-      return;
-    }
-
-    nameInput = document.getElementById("login-name");
-    secretInput = document.getElementById("login-secret");
-    signupPassword = document.getElementById("signup-password");
-
-    // type=password / decoy / form 로그인 패턴이 "암호채우기"를 유발하므로
-    // 텍스트 입력 + 마스킹만 사용하고, 브라우저 자동완성 힌트를 끈다.
-    [nameInput, secretInput, signupPassword].forEach(function (input) {
-      if (!input) {
-        return;
-      }
-      input.removeAttribute("disabled");
-      input.removeAttribute("readonly");
-      if (input.type === "password") {
-        input.type = "text";
-      }
-      input.setAttribute("autocomplete", "off");
-      input.setAttribute("data-lpignore", "true");
-      input.setAttribute("data-1p-ignore", "true");
-      input.setAttribute("data-form-type", "other");
-      input.classList.add("field-secret");
-    });
-
-    if (nameInput) {
-      nameInput.classList.remove("field-secret");
-      nameInput.setAttribute("inputmode", "text");
-    }
-    if (secretInput) {
-      secretInput.setAttribute("inputmode", "text");
-    }
-  }
 
   updatePhoneScale();
   ensureMasterAccount();
@@ -2886,7 +2998,7 @@
     var nameInput = document.getElementById("login-name");
     var secretInput = document.getElementById("login-secret");
     var name = nameInput ? nameInput.value.trim() : "";
-    var password = secretInput ? secretInput.value.trim() : "";
+    var password = getMaskedFieldValue(secretInput).trim();
 
     if (!name || !password) {
       alert("이름과 비밀번호를 입력해 주세요.");
@@ -2946,7 +3058,7 @@
     event.preventDefault();
 
     var name = signupForm.name.value.trim();
-    var password = document.getElementById("signup-password").value.trim();
+    var password = getMaskedFieldValue(document.getElementById("signup-password")).trim();
     var motto = signupForm.motto.value.trim();
 
     if (!name || !password) {

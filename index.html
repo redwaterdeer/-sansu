@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
@@ -37,17 +37,17 @@
         </div>
       </section>
 
-      <div class="login-form" id="login-form" role="group" data-form-type="other">
-        <label class="field">
+      <div class="login-form" id="login-form" role="group" data-form-type="other" autocomplete="off">
+        <div class="field" data-field="name">
           <span class="field-label">이름</span>
           <span class="field-divider" aria-hidden="true"></span>
-          <input type="text" id="login-name" name="student-name" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text" enterkeyhint="next" data-lpignore="true" data-1p-ignore="true" data-form-type="other">
-        </label>
-        <label class="field">
-          <span class="field-label">비밀번호</span>
+          <input type="text" id="login-name" name="student-name" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text" enterkeyhint="next" data-lpignore="true" data-1p-ignore="true" data-form-type="other" readonly>
+        </div>
+        <div class="field" data-field="code">
+          <span class="field-label">비&#8203;밀&#8203;번&#8203;호</span>
           <span class="field-divider" aria-hidden="true"></span>
-          <input type="text" class="field-secret" id="login-secret" name="login-secret" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text" enterkeyhint="done" data-lpignore="true" data-1p-ignore="true" data-form-type="other">
-        </label>
+          <input type="text" id="login-secret" name="access-code" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text" enterkeyhint="done" data-lpignore="true" data-1p-ignore="true" data-form-type="other" readonly>
+        </div>
       </div>
 
       <p class="signup-link">
@@ -770,8 +770,8 @@
             onerror="this.onerror=null;this.src='https://i.ibb.co/v4FTd2ZC/7.png';"
           >
           <div class="signup-field">
-            <label class="signup-label" for="signup-password">비밀번호</label>
-            <input class="signup-input field-secret" type="text" id="signup-password" name="signup-secret" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-form-type="other">
+            <label class="signup-label" for="signup-password">비&#8203;밀&#8203;번&#8203;호</label>
+            <input class="signup-input" type="text" id="signup-password" name="signup-code" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-form-type="other" readonly>
           </div>
         </div>
 

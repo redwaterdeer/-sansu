@@ -1,4 +1,4 @@
-@font-face {
+﻿@font-face {
   font-family: "양재백두체B";
   src:
     url("fonts/양재백두체B.ttf") format("truetype"),
@@ -264,6 +264,7 @@ select,
   border-radius: 10px;
   padding: 0 10px;
   height: 38px;
+  cursor: text;
 }
 
 .field-label {
@@ -301,12 +302,14 @@ select,
   height: 100%;
 }
 
+/* iOS는 -webkit-text-security를 비밀번호 칸으로 인식하므로 사용하지 않음.
+   비밀번호 가리기는 JS 마스킹(●)으로 처리한다. */
 .field-secret {
-  -webkit-text-security: disc;
+  letter-spacing: 0.08em;
 }
 
 .signup-input.field-secret {
-  -webkit-text-security: disc;
+  letter-spacing: 0.08em;
 }
 
 .signup-link {
@@ -1441,6 +1444,11 @@ select,
   row-gap: 1px;
 }
 
+.quiz-screen--divide.quiz-digits-2 .quiz-grid--divide {
+  column-gap: var(--divide-gap, 3px);
+  row-gap: 2px;
+}
+
 .quiz-screen--divide.quiz-digits-2 .quiz-problem {
   margin-top: 34px;
   padding-left: 0;
@@ -1453,11 +1461,6 @@ select,
 
 .quiz-screen--divide.quiz-digits-2 .quiz-body {
   min-height: 0;
-}
-
-.quiz-screen--divide.quiz-digits-2 .quiz-grid--divide {
-  column-gap: var(--divide-gap, 3px);
-  row-gap: 2px;
 }
 
 .quiz-screen--divide .quiz-submit {
