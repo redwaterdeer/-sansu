@@ -447,10 +447,39 @@
   function preventLoginAutofillPopup() {
     var nameInput;
     var secretInput;
+    var unlocked = false;
 
-    function unlockSecretInput() {
-      if (secretInput && secretInput.hasAttribute("readonly")) {
+    function unlockLoginFields(event) {
+      var field;
+      var targetInput;
+
+      if (unlocked) {
+        return;
+      }
+      unlocked = true;
+
+      if (nameInput) {
+        nameInput.removeAttribute("disabled");
+        nameInput.removeAttribute("readonly");
+      }
+      if (secretInput) {
+        secretInput.removeAttribute("disabled");
         secretInput.removeAttribute("readonly");
+      }
+
+      // disabled 상태였던 입력칸을 같은 탭에서 바로 포커스
+      if (event && event.target && event.target.closest) {
+        field = event.target.closest(".field");
+        if (field && loginForm.contains(field)) {
+          targetInput = field.querySelector(
+            'input[name="student-name"], input[name="login-secret"]'
+          );
+          if (targetInput) {
+            setTimeout(function () {
+              targetInput.focus();
+            }, 0);
+          }
+        }
       }
     }
 
@@ -459,34 +488,31 @@
     }
 
     loginForm.setAttribute("autocomplete", "off");
+    loginForm.setAttribute("data-form-type", "other");
     nameInput = loginForm.querySelector('input[name="student-name"]');
     secretInput = loginForm.querySelector('input[name="login-secret"]');
 
-    // 이름: readonly를 쓰면 첫 탭에서 키보드가 안 뜸 → 절대 걸지 않음
+    // 최초 로드 시 브라우저가 로그인 폼으로 인식해 "암호채우기"가 뜨지 않도록
+    // 첫 터치/클릭 전까지는 disabled 유지
     if (nameInput) {
-      nameInput.removeAttribute("readonly");
       nameInput.setAttribute("autocomplete", "off");
       nameInput.setAttribute("inputmode", "text");
+      nameInput.setAttribute("data-lpignore", "true");
+      nameInput.setAttribute("data-1p-ignore", "true");
+      nameInput.setAttribute("disabled", "disabled");
     }
 
-    // 비밀번호만 자동완성 방지용 readonly (탭 직전에 해제)
     if (secretInput) {
-      secretInput.setAttribute("autocomplete", "off");
+      secretInput.setAttribute("autocomplete", "one-time-code");
       secretInput.setAttribute("inputmode", "text");
-      secretInput.setAttribute("readonly", "readonly");
-
-      loginForm.addEventListener("pointerdown", unlockSecretInput, true);
-      loginForm.addEventListener("touchstart", unlockSecretInput, { passive: true, capture: true });
-      loginForm.addEventListener("mousedown", unlockSecretInput, true);
-      secretInput.addEventListener("focus", unlockSecretInput);
-      secretInput.addEventListener("blur", function () {
-        setTimeout(function () {
-          if (document.activeElement !== secretInput) {
-            secretInput.setAttribute("readonly", "readonly");
-          }
-        }, 50);
-      });
+      secretInput.setAttribute("data-lpignore", "true");
+      secretInput.setAttribute("data-1p-ignore", "true");
+      secretInput.setAttribute("disabled", "disabled");
     }
+
+    document.addEventListener("pointerdown", unlockLoginFields, true);
+    document.addEventListener("touchstart", unlockLoginFields, { passive: true, capture: true });
+    document.addEventListener("keydown", unlockLoginFields, true);
   }
 
   updatePhoneScale();
@@ -1675,25 +1701,14 @@
     spaceAbove = rect.top;
     spaceBelow = window.innerHeight - rect.bottom;
 
-    if (spaceAbove >= listHeight + gap) {
-      top = rect.top - listHeight - gap;
-    } else if (spaceBelow >= listHeight + gap) {
+    // 답박스 바로 하단 우선
+    if (spaceBelow >= listHeight + gap || spaceBelow >= spaceAbove) {
       top = rect.bottom + gap;
-    } else if (spaceAbove >= spaceBelow) {
-      top = Math.max(8, rect.top - listHeight - gap);
-    } else {
-      top = rect.bottom + gap;
-    }
-
-    if (top + listHeight > window.innerHeight - 8) {
-      top = window.innerHeight - listHeight - 8;
-    }
-    if (top + listHeight + gap > rect.top && top < rect.bottom) {
-      if (spaceBelow >= spaceAbove) {
-        top = rect.bottom + gap;
-      } else {
-        top = Math.max(8, rect.top - listHeight - gap);
+      if (top + listHeight > window.innerHeight - 8) {
+        top = Math.max(8, window.innerHeight - listHeight - 8);
       }
+    } else {
+      top = Math.max(8, rect.top - listHeight - gap);
     }
 
     list.style.left = left + "px";
@@ -2065,26 +2080,26 @@
     var answerFont;
 
     if (digitLevel === 4) {
-      cell = 20;
-      op = 18;
-      gap = 2;
-      rowGap = 2;
-      font = 20;
-      answerFont = 14;
-    } else if (digitLevel === 3) {
-      cell = 22;
-      op = 20;
-      gap = 2;
-      rowGap = 2;
-      font = 22;
-      answerFont = 15;
-    } else if (digitLevel === 2) {
       cell = 24;
-      op = 22;
+      op = 20;
       gap = 2;
       rowGap = 2;
       font = 24;
       answerFont = 16;
+    } else if (digitLevel === 3) {
+      cell = 26;
+      op = 22;
+      gap = 2;
+      rowGap = 3;
+      font = 26;
+      answerFont = 17;
+    } else if (digitLevel === 2) {
+      cell = 28;
+      op = 24;
+      gap = 3;
+      rowGap = 3;
+      font = 28;
+      answerFont = 18;
     } else {
       cell = 34;
       op = 28;
@@ -2094,11 +2109,11 @@
       answerFont = 22;
     }
 
-    if (cols >= 5 && cell > 18) {
+    if (cols >= 5 && cell > 20) {
       cell -= 2;
-      font = Math.max(16, font - 2);
-      answerFont = Math.max(12, answerFont - 1);
-      op = Math.max(16, op - 2);
+      font = Math.max(18, font - 2);
+      answerFont = Math.max(14, answerFont - 1);
+      op = Math.max(18, op - 2);
     }
 
     return {
@@ -2215,25 +2230,25 @@
     var shrink;
 
     if (digitLevel === 4) {
-      cell = 22;
+      cell = 24;
       gap = 1;
-      font = 20;
-      maxWidth = 218;
+      font = 22;
+      maxWidth = 220;
     } else if (digitLevel === 2) {
-      cell = 28;
+      cell = 30;
       gap = 3;
-      font = 28;
-      maxWidth = 202;
+      font = 30;
+      maxWidth = 206;
     } else if (digitLevel === 1) {
-      cell = 32;
+      cell = 34;
       gap = 1;
-      font = 32;
-      maxWidth = 186;
+      font = 34;
+      maxWidth = 190;
     } else {
-      cell = maxCols >= 5 ? 24 : maxCols >= 4 ? 26 : 28;
+      cell = maxCols >= 5 ? 26 : maxCols >= 4 ? 28 : 30;
       gap = 1;
       font = cell;
-      maxWidth = 206;
+      maxWidth = 210;
     }
 
     side = cell * divisorLen + gap * Math.max(0, divisorLen - 1);
@@ -2443,14 +2458,14 @@
         screen.classList.contains("quiz-digits-4"));
 
     submit = body.querySelector(".quiz-submit");
-    submitReserve = isMultiplyCompact ? 14 : 6;
+    submitReserve = isMultiplyCompact ? 12 : 6;
     available = body.clientHeight - (problem.offsetTop - body.offsetTop) - 4;
     if (submit) {
       available -= submit.offsetHeight + submitReserve;
     }
 
     gridHeight = grid.offsetHeight;
-    minScale = isMultiplyCompact ? 0.58 : 0.78;
+    minScale = isMultiplyCompact ? 0.68 : 0.82;
     if (gridHeight > available && available > 40) {
       scale = Math.max(minScale, available / gridHeight);
       problem.style.transform = "scale(" + scale + ")";

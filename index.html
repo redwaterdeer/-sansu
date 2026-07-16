@@ -37,16 +37,20 @@
         </div>
       </section>
 
-      <form class="login-form" id="login-form" novalidate autocomplete="off">
+      <form class="login-form" id="login-form" novalidate autocomplete="off" data-form-type="other">
+        <div class="login-autofill-decoy" aria-hidden="true">
+          <input type="text" name="username" tabindex="-1" autocomplete="username">
+          <input type="password" name="password" tabindex="-1" autocomplete="current-password">
+        </div>
         <label class="field">
           <span class="field-label">이름</span>
           <span class="field-divider" aria-hidden="true"></span>
-          <input type="text" id="login-name" name="student-name" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text" enterkeyhint="next">
+          <input type="text" id="login-name" name="student-name" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text" enterkeyhint="next" data-lpignore="true" data-1p-ignore="true" data-form-type="other" disabled>
         </label>
         <label class="field">
           <span class="field-label">비밀번호</span>
           <span class="field-divider" aria-hidden="true"></span>
-          <input type="text" class="field-secret" id="login-secret" name="login-secret" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text" enterkeyhint="done">
+          <input type="text" class="field-secret" id="login-secret" name="login-secret" autocomplete="one-time-code" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text" enterkeyhint="done" data-lpignore="true" data-1p-ignore="true" data-form-type="other" disabled>
         </label>
       </form>
 
