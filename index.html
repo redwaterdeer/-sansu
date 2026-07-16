@@ -37,22 +37,18 @@
         </div>
       </section>
 
-      <form class="login-form" id="login-form" novalidate autocomplete="off" data-form-type="other">
-        <div class="login-autofill-decoy" aria-hidden="true">
-          <input type="text" name="username" tabindex="-1" autocomplete="username">
-          <input type="password" name="password" tabindex="-1" autocomplete="current-password">
-        </div>
+      <div class="login-form" id="login-form" role="group" data-form-type="other">
         <label class="field">
           <span class="field-label">이름</span>
           <span class="field-divider" aria-hidden="true"></span>
-          <input type="text" id="login-name" name="student-name" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text" enterkeyhint="next" data-lpignore="true" data-1p-ignore="true" data-form-type="other" disabled>
+          <input type="text" id="login-name" name="student-name" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text" enterkeyhint="next" data-lpignore="true" data-1p-ignore="true" data-form-type="other">
         </label>
         <label class="field">
           <span class="field-label">비밀번호</span>
           <span class="field-divider" aria-hidden="true"></span>
-          <input type="text" class="field-secret" id="login-secret" name="login-secret" autocomplete="one-time-code" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text" enterkeyhint="done" data-lpignore="true" data-1p-ignore="true" data-form-type="other" disabled>
+          <input type="text" class="field-secret" id="login-secret" name="login-secret" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text" enterkeyhint="done" data-lpignore="true" data-1p-ignore="true" data-form-type="other">
         </label>
-      </form>
+      </div>
 
       <p class="signup-link">
         <a href="#" id="signup-link">새로 가입</a>
@@ -775,7 +771,7 @@
           >
           <div class="signup-field">
             <label class="signup-label" for="signup-password">비밀번호</label>
-            <input class="signup-input" type="password" id="signup-password" name="password" autocomplete="new-password">
+            <input class="signup-input field-secret" type="text" id="signup-password" name="signup-secret" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-form-type="other">
           </div>
         </div>
 

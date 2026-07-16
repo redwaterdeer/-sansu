@@ -71,7 +71,14 @@
   }
 
   function goToLoginScreen() {
-    loginForm.reset();
+    var nameInput = document.getElementById("login-name");
+    var secretInput = document.getElementById("login-secret");
+    if (nameInput) {
+      nameInput.value = "";
+    }
+    if (secretInput) {
+      secretInput.value = "";
+    }
     currentUserName = "";
     isCurrentUserMaster = false;
     updateScreen2Exit();
@@ -447,72 +454,41 @@
   function preventLoginAutofillPopup() {
     var nameInput;
     var secretInput;
-    var unlocked = false;
-
-    function unlockLoginFields(event) {
-      var field;
-      var targetInput;
-
-      if (unlocked) {
-        return;
-      }
-      unlocked = true;
-
-      if (nameInput) {
-        nameInput.removeAttribute("disabled");
-        nameInput.removeAttribute("readonly");
-      }
-      if (secretInput) {
-        secretInput.removeAttribute("disabled");
-        secretInput.removeAttribute("readonly");
-      }
-
-      // disabled 상태였던 입력칸을 같은 탭에서 바로 포커스
-      if (event && event.target && event.target.closest) {
-        field = event.target.closest(".field");
-        if (field && loginForm.contains(field)) {
-          targetInput = field.querySelector(
-            'input[name="student-name"], input[name="login-secret"]'
-          );
-          if (targetInput) {
-            setTimeout(function () {
-              targetInput.focus();
-            }, 0);
-          }
-        }
-      }
-    }
+    var signupPassword;
 
     if (!loginForm) {
       return;
     }
 
-    loginForm.setAttribute("autocomplete", "off");
-    loginForm.setAttribute("data-form-type", "other");
-    nameInput = loginForm.querySelector('input[name="student-name"]');
-    secretInput = loginForm.querySelector('input[name="login-secret"]');
+    nameInput = document.getElementById("login-name");
+    secretInput = document.getElementById("login-secret");
+    signupPassword = document.getElementById("signup-password");
 
-    // 최초 로드 시 브라우저가 로그인 폼으로 인식해 "암호채우기"가 뜨지 않도록
-    // 첫 터치/클릭 전까지는 disabled 유지
+    // type=password / decoy / form 로그인 패턴이 "암호채우기"를 유발하므로
+    // 텍스트 입력 + 마스킹만 사용하고, 브라우저 자동완성 힌트를 끈다.
+    [nameInput, secretInput, signupPassword].forEach(function (input) {
+      if (!input) {
+        return;
+      }
+      input.removeAttribute("disabled");
+      input.removeAttribute("readonly");
+      if (input.type === "password") {
+        input.type = "text";
+      }
+      input.setAttribute("autocomplete", "off");
+      input.setAttribute("data-lpignore", "true");
+      input.setAttribute("data-1p-ignore", "true");
+      input.setAttribute("data-form-type", "other");
+      input.classList.add("field-secret");
+    });
+
     if (nameInput) {
-      nameInput.setAttribute("autocomplete", "off");
+      nameInput.classList.remove("field-secret");
       nameInput.setAttribute("inputmode", "text");
-      nameInput.setAttribute("data-lpignore", "true");
-      nameInput.setAttribute("data-1p-ignore", "true");
-      nameInput.setAttribute("disabled", "disabled");
     }
-
     if (secretInput) {
-      secretInput.setAttribute("autocomplete", "one-time-code");
       secretInput.setAttribute("inputmode", "text");
-      secretInput.setAttribute("data-lpignore", "true");
-      secretInput.setAttribute("data-1p-ignore", "true");
-      secretInput.setAttribute("disabled", "disabled");
     }
-
-    document.addEventListener("pointerdown", unlockLoginFields, true);
-    document.addEventListener("touchstart", unlockLoginFields, { passive: true, capture: true });
-    document.addEventListener("keydown", unlockLoginFields, true);
   }
 
   updatePhoneScale();
@@ -2907,8 +2883,10 @@
   }
 
   function handleLogin() {
-    var name = loginForm["student-name"].value.trim();
-    var password = loginForm["login-secret"].value.trim();
+    var nameInput = document.getElementById("login-name");
+    var secretInput = document.getElementById("login-secret");
+    var name = nameInput ? nameInput.value.trim() : "";
+    var password = secretInput ? secretInput.value.trim() : "";
 
     if (!name || !password) {
       alert("이름과 비밀번호를 입력해 주세요.");
@@ -2944,10 +2922,14 @@
     showScreen("screen-2");
   }
 
-  loginForm.addEventListener("submit", function (event) {
-    event.preventDefault();
-    handleLogin();
-  });
+  if (loginForm) {
+    loginForm.addEventListener("keydown", function (event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        handleLogin();
+      }
+    });
+  }
 
   loginLink.addEventListener("click", function (event) {
     event.preventDefault();
@@ -2964,7 +2946,7 @@
     event.preventDefault();
 
     var name = signupForm.name.value.trim();
-    var password = signupForm.password.value.trim();
+    var password = document.getElementById("signup-password").value.trim();
     var motto = signupForm.motto.value.trim();
 
     if (!name || !password) {
