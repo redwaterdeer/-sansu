@@ -2189,12 +2189,12 @@
       font = 28;
       answerFont = 18;
     } else {
-      cell = 34;
-      op = 28;
-      gap = 4;
-      rowGap = 4;
-      font = 34;
-      answerFont = 22;
+      cell = 30;
+      op = 26;
+      gap = 3;
+      rowGap = 3;
+      font = 30;
+      answerFont = 20;
     }
 
     if (cols >= 5 && cell > 20) {
