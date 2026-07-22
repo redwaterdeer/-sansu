@@ -2182,19 +2182,19 @@
       font = 30;
       answerFont = 19;
     } else if (digitLevel === 2) {
-      cell = 32;
-      op = 26;
+      cell = 28;
+      op = 24;
       gap = 3;
-      rowGap = 4;
-      font = 32;
-      answerFont = 20;
+      rowGap = 3;
+      font = 28;
+      answerFont = 18;
     } else {
-      cell = 40;
-      op = 32;
-      gap = 5;
-      rowGap = 5;
-      font = 40;
-      answerFont = 26;
+      cell = 34;
+      op = 28;
+      gap = 4;
+      rowGap = 4;
+      font = 34;
+      answerFont = 22;
     }
 
     if (cols >= 5 && cell > 20) {

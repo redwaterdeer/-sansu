@@ -1223,14 +1223,19 @@ select,
 .quiz-screen--multiply .quiz-problem {
   position: relative;
   z-index: 1;
-  margin-top: 56px;
+  margin-top: 40px;
 }
 
 .quiz-screen--multiply .quiz-submit {
   margin-top: 8px;
 }
 
-.quiz-screen--multiply.quiz-digits-2 .quiz-problem,
+.quiz-screen--multiply.quiz-digits-2 .quiz-problem {
+  margin-top: 12px;
+  flex-shrink: 1;
+  min-height: 0;
+}
+
 .quiz-screen--multiply.quiz-digits-3 .quiz-problem,
 .quiz-screen--multiply.quiz-digits-4 .quiz-problem {
   margin-top: 52px;
