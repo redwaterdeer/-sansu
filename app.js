@@ -2168,33 +2168,33 @@
     var answerFont;
 
     if (digitLevel === 4) {
-      cell = 24;
-      op = 20;
-      gap = 2;
-      rowGap = 2;
-      font = 24;
-      answerFont = 16;
-    } else if (digitLevel === 3) {
       cell = 26;
       op = 22;
       gap = 2;
-      rowGap = 3;
+      rowGap = 2;
       font = 26;
       answerFont = 17;
-    } else if (digitLevel === 2) {
-      cell = 28;
+    } else if (digitLevel === 3) {
+      cell = 30;
       op = 24;
       gap = 3;
       rowGap = 3;
-      font = 28;
-      answerFont = 18;
-    } else {
-      cell = 34;
-      op = 28;
-      gap = 4;
+      font = 30;
+      answerFont = 19;
+    } else if (digitLevel === 2) {
+      cell = 32;
+      op = 26;
+      gap = 3;
       rowGap = 4;
-      font = 34;
-      answerFont = 22;
+      font = 32;
+      answerFont = 20;
+    } else {
+      cell = 40;
+      op = 32;
+      gap = 5;
+      rowGap = 5;
+      font = 40;
+      answerFont = 26;
     }
 
     if (cols >= 5 && cell > 20) {
