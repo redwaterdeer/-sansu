@@ -1230,8 +1230,15 @@ select,
   margin-top: 8px;
 }
 
+.quiz-screen--multiply.quiz-digits-1 .quiz-submit,
+#screen-quiz.quiz-screen--multiply.quiz-digits-1 .quiz-submit,
+#screen-quiz-wrong.quiz-screen--multiply.quiz-digits-1 .quiz-submit,
+#screen-quiz-correct.quiz-screen--multiply.quiz-digits-1 .quiz-submit {
+  margin-top: 22px;
+}
+
 .quiz-screen--multiply.quiz-digits-2 .quiz-problem {
-  margin-top: 4px;
+  margin-top: 18px;
   flex-shrink: 1;
   min-height: 0;
 }

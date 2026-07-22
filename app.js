@@ -1194,82 +1194,94 @@
   }
 
   function generateAdditionProblem(digits) {
-    var sum;
-    var a;
-    var b;
+    var minSum = digits === 1 ? 2 : Math.pow(10, digits - 1);
+    var maxSum = Math.pow(10, digits) - 1;
+    var sum = randomInt(minSum, maxSum);
+    var a = randomInt(1, sum - 1);
+    var b = sum - a;
 
-    if (digits === 1) {
-      a = randomInt(1, 8);
-      b = randomInt(1, 9 - a);
-    } else if (digits === 2) {
-      sum = randomInt(10, 99);
-      a = randomInt(1, sum - 1);
-      b = sum - a;
-    } else if (digits === 3) {
-      sum = randomInt(100, 999);
-      a = randomInt(10, sum - 10);
-      b = sum - a;
-    } else {
-      sum = randomInt(1000, 9999);
-      a = randomInt(100, sum - 100);
-      b = sum - a;
-    }
-
-    return { a: a, b: b, sum: a + b };
+    return { a: a, b: b, sum: sum };
   }
 
   function generateSubtractionProblem(digits) {
-    var a;
-    var b;
-
-    if (digits === 1) {
-      a = randomInt(2, 9);
-      b = randomInt(1, a - 1);
-    } else if (digits === 2) {
-      a = randomInt(20, 99);
-      b = randomInt(10, a - 1);
-    } else if (digits === 3) {
-      a = randomInt(200, 999);
-      b = randomInt(100, a - 1);
-    } else {
-      a = randomInt(2000, 9999);
-      b = randomInt(1000, a - 1);
-    }
+    var minAnswer = digits === 1 ? 1 : Math.pow(10, digits - 1);
+    var maxNum = Math.pow(10, digits) - 1;
+    var a = randomInt(Math.min(maxNum, minAnswer + 1), maxNum);
+    var b = randomInt(1, Math.max(1, a - minAnswer));
 
     return { a: a, b: b, diff: a - b };
   }
 
   function generateMultiplicationProblem(digits) {
-    var a;
-    var b;
-    var product;
-    var cols;
+    var minProduct = digits === 1 ? 2 : Math.pow(10, digits - 1);
+    var maxProduct = Math.pow(10, digits) - 1;
+    var a = 2;
+    var b = 2;
+    var product = 4;
+    var bMin;
+    var bMax;
+    var attempts = 0;
 
-    if (digits === 1) {
-      a = randomInt(2, 9);
-      b = randomInt(2, 9);
+    while (attempts < 80) {
+      attempts += 1;
+
+      if (digits === 1) {
+        a = randomInt(2, 9);
+        bMax = Math.min(9, Math.floor(maxProduct / a));
+        if (bMax < 2) {
+          continue;
+        }
+        b = randomInt(2, bMax);
+      } else if (digits === 2) {
+        a = randomInt(2, 9);
+        bMin = Math.max(2, Math.ceil(minProduct / a));
+        bMax = Math.min(99, Math.floor(maxProduct / a));
+        if (bMin > bMax) {
+          continue;
+        }
+        b = randomInt(bMin, bMax);
+      } else if (digits === 3) {
+        a = randomInt(4, 99);
+        bMin = Math.max(2, Math.ceil(minProduct / a));
+        bMax = Math.min(99, Math.floor(maxProduct / a));
+        if (bMin > bMax) {
+          continue;
+        }
+        b = randomInt(bMin, bMax);
+      } else {
+        a = randomInt(10, 99);
+        bMin = Math.max(2, Math.ceil(minProduct / a));
+        bMax = Math.min(99, Math.floor(maxProduct / a));
+        if (bMin > bMax) {
+          continue;
+        }
+        b = randomInt(bMin, bMax);
+      }
+
       product = a * b;
-      cols = Math.max(2, String(product).length);
-    } else if (digits === 2) {
-      a = randomInt(10, 99);
-      b = randomInt(10, 99);
-      product = a * b;
-      cols = Math.max(3, String(product).length);
-    } else if (digits === 3) {
-      a = randomInt(10, 99);
-      b = randomInt(10, 30);
-      product = a * b;
-      cols = 3;
-    } else {
-      a = randomInt(100, 999);
-      b = randomInt(10, 99);
-      product = a * b;
-      cols = Math.max(4, String(product).length);
+      if (product >= minProduct && product <= maxProduct) {
+        break;
+      }
     }
 
-    cols = Math.max(cols, String(product).length);
+    if (product < minProduct || product > maxProduct) {
+      if (digits === 1) {
+        a = 2;
+        b = 4;
+      } else if (digits === 2) {
+        a = 5;
+        b = 5;
+      } else if (digits === 3) {
+        a = 25;
+        b = 5;
+      } else {
+        a = 25;
+        b = 45;
+      }
+      product = a * b;
+    }
 
-    return { a: a, b: b, product: product, cols: cols };
+    return { a: a, b: b, product: product, cols: String(product).length };
   }
 
   function generateDivisionProblem(digits) {
@@ -1567,6 +1579,7 @@
     var productDigits = padDigits(a * b, cols);
     var i;
     var j;
+    var start = 0;
 
     for (i = 0; i < rows.length; i += 1) {
       for (j = 0; j < rows[i].digits.length; j += 1) {
@@ -1574,7 +1587,14 @@
       }
     }
 
-    for (i = 0; i < productDigits.length; i += 1) {
+    while (
+      start < productDigits.length - 1 &&
+      (productDigits[start] === "" || productDigits[start] === "0")
+    ) {
+      start += 1;
+    }
+
+    for (i = start; i < productDigits.length; i += 1) {
       slots.push(productDigits[i]);
     }
 
@@ -1599,7 +1619,7 @@
   }
 
   function getAnswerBoxCount(opScreen, digits, answer) {
-    if (opScreen === "screen-subtract") {
+    if (opScreen === "screen-subtract" || opScreen === "screen-add") {
       return Math.max(1, String(Number(answer) || 0).length);
     }
 
@@ -1607,7 +1627,7 @@
   }
 
   function getAnswerDisplayDigits(opScreen, digits, answer) {
-    if (opScreen === "screen-subtract") {
+    if (opScreen === "screen-subtract" || opScreen === "screen-add") {
       return String(Number(answer) || 0).split("");
     }
 
@@ -2299,8 +2319,22 @@
     var finalOp = document.createElement("span");
     finalOp.className = "quiz-op-cell";
     grid.appendChild(finalOp);
+
+    var productDigits = padDigits(a * b, cols);
+    var productStart = 0;
+    while (
+      productStart < cols - 1 &&
+      (productDigits[productStart] === "" || productDigits[productStart] === "0")
+    ) {
+      productStart += 1;
+    }
+
     for (j = 0; j < cols; j += 1) {
-      answerIndex = appendMultiplyAnswerCell(grid, answerIndex, answers, feedback, readOnly);
+      if (j < productStart) {
+        appendMultiplySpacer(grid);
+      } else {
+        answerIndex = appendMultiplyAnswerCell(grid, answerIndex, answers, feedback, readOnly);
+      }
     }
     fitQuizProblemGrid(gridId);
   }
@@ -2566,7 +2600,7 @@
     var grid = document.getElementById(gridId);
     var aDigits = padDigits(a, digits);
     var bDigits = padDigits(b, digits);
-    var answerValueNum = currentQuizAnswer;
+    var answerValueNum = opSymbol === "-" ? a - b : a + b;
     var answerStartCol = 0;
     var answerBoxCount = digits;
     var line;
@@ -2574,10 +2608,18 @@
     var j;
     var readOnly = options && options.readOnly;
 
-    if (currentQuizState.opScreen === "screen-subtract" || opSymbol === "-") {
-      answerValueNum = a - b;
-      answerBoxCount = getAnswerBoxCount("screen-subtract", digits, answerValueNum);
-      answerStartCol = digits - answerBoxCount;
+    if (
+      currentQuizState.opScreen === "screen-subtract" ||
+      currentQuizState.opScreen === "screen-add" ||
+      opSymbol === "-" ||
+      opSymbol === "+"
+    ) {
+      answerBoxCount = getAnswerBoxCount(
+        opSymbol === "-" ? "screen-subtract" : "screen-add",
+        digits,
+        answerValueNum
+      );
+      answerStartCol = Math.max(0, digits - answerBoxCount);
     }
 
     grid.innerHTML = "";
