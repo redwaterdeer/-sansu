@@ -2929,13 +2929,32 @@
     quizFireworksFrame = requestAnimationFrame(frame);
   }
 
-  function loadQuizProblem(opScreen, digits, problemOverride) {
-    var problem = problemOverride || generateQuizProblem(opScreen, digits);
+  function loadQuizProblem(opScreen, digits, problemOverride, avoidPrevious) {
+    var problem;
+    var attempts;
+    var key;
+    var avoidKey;
     var opSymbol = OP_SYMBOLS[opScreen] || "+";
     var opLabel = OP_LABELS[opScreen] || "덧셈";
     var divisionLayout = null;
     var answerSlots = [];
-    var problemSnapshot = captureProblemSnapshot(opScreen, problem);
+    var problemSnapshot;
+
+    if (problemOverride) {
+      problem = problemOverride;
+    } else if (avoidPrevious && currentQuizState.problem) {
+      avoidKey = getProblemKey(opScreen, digits, currentQuizState.problem);
+      attempts = 0;
+      do {
+        problem = generateQuizProblem(opScreen, digits);
+        key = getProblemKey(opScreen, digits, captureProblemSnapshot(opScreen, problem));
+        attempts += 1;
+      } while (key === avoidKey && attempts < 50);
+    } else {
+      problem = generateQuizProblem(opScreen, digits);
+    }
+
+    problemSnapshot = captureProblemSnapshot(opScreen, problem);
 
     if (opScreen === "screen-multiply") {
       answerSlots = buildMultiplyAnswerSlots(problem.a, problem.b, problem.cols);
@@ -3008,7 +3027,7 @@
     }
 
     quizProblemNumber += 1;
-    loadQuizProblem(currentQuizState.opScreen, currentQuizState.digits);
+    loadQuizProblem(currentQuizState.opScreen, currentQuizState.digits, null, true);
     showScreen("screen-quiz");
   }
 
