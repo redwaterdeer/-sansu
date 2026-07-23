@@ -2892,37 +2892,54 @@
   }
 
   function getGoClickSrc() {
-    return getQuizAssetSrc("go-click.mp3", "sounds/go-click.mp3");
+    return getQuizAssetSrc("go-click.wav", "sounds/go-click.wav");
   }
 
   var selectClickAudio = null;
   var goClickAudio = null;
 
-  function playSelectClick() {
-    try {
-      if (!selectClickAudio) {
-        selectClickAudio = new Audio(getSelectClickSrc());
-      }
-      selectClickAudio.currentTime = 0;
-      var playPromise = selectClickAudio.play();
-      if (playPromise && typeof playPromise.catch === "function") {
-        playPromise.catch(function () {});
-      }
-    } catch (error) {}
+  function ensureClickAudio(existing, src) {
+    if (existing) {
+      return existing;
+    }
+    var audio = new Audio(src);
+    audio.preload = "auto";
+    audio.load();
+    return audio;
   }
 
-  function playGoClick() {
-    try {
-      if (!goClickAudio) {
-        goClickAudio = new Audio(getGoClickSrc());
+  function playPreparedClick(baseAudio, afterPlay) {
+    if (!baseAudio) {
+      if (typeof afterPlay === "function") {
+        afterPlay();
       }
-      goClickAudio.currentTime = 0;
-      var playPromise = goClickAudio.play();
+      return;
+    }
+    try {
+      var sfx = baseAudio.cloneNode(true);
+      sfx.currentTime = 0;
+      var playPromise = sfx.play();
       if (playPromise && typeof playPromise.catch === "function") {
         playPromise.catch(function () {});
       }
     } catch (error) {}
+    if (typeof afterPlay === "function") {
+      setTimeout(afterPlay, 30);
+    }
   }
+
+  function playSelectClick(afterPlay) {
+    selectClickAudio = ensureClickAudio(selectClickAudio, getSelectClickSrc());
+    playPreparedClick(selectClickAudio, afterPlay);
+  }
+
+  function playGoClick(afterPlay) {
+    goClickAudio = ensureClickAudio(goClickAudio, getGoClickSrc());
+    playPreparedClick(goClickAudio, afterPlay);
+  }
+
+  selectClickAudio = ensureClickAudio(null, getSelectClickSrc());
+  goClickAudio = ensureClickAudio(null, getGoClickSrc());
 
   function stopQuizWrongBgm() {
     if (!quizWrongBgmAudio) {
@@ -3388,23 +3405,27 @@
   });
 
   pickPlusBtn.addEventListener("click", function () {
-    playSelectClick();
-    showScreen("screen-add");
+    playSelectClick(function () {
+      showScreen("screen-add");
+    });
   });
 
   pickMinusBtn.addEventListener("click", function () {
-    playSelectClick();
-    showScreen("screen-subtract");
+    playSelectClick(function () {
+      showScreen("screen-subtract");
+    });
   });
 
   pickMultiplyBtn.addEventListener("click", function () {
-    playSelectClick();
-    showScreen("screen-multiply");
+    playSelectClick(function () {
+      showScreen("screen-multiply");
+    });
   });
 
   pickDivideBtn.addEventListener("click", function () {
-    playSelectClick();
-    showScreen("screen-divide");
+    playSelectClick(function () {
+      showScreen("screen-divide");
+    });
   });
 
   document.querySelectorAll(".exit-to-login-btn").forEach(function (btn) {
@@ -3421,8 +3442,9 @@
 
   document.querySelectorAll("[data-op-screen]").forEach(function (btn) {
     btn.addEventListener("click", function () {
-      playSelectClick();
-      showScreen(btn.getAttribute("data-op-screen"));
+      playSelectClick(function () {
+        showScreen(btn.getAttribute("data-op-screen"));
+      });
     });
   });
 
@@ -3443,14 +3465,16 @@
           return;
         }
 
-        playGoClick();
-        showScreen("screen-difficulty");
+        playGoClick(function () {
+          showScreen("screen-difficulty");
+        });
         return;
       }
 
-      playGoClick();
-      resetDifficultyPickVisibility();
-      showScreen("screen-difficulty");
+      playGoClick(function () {
+        resetDifficultyPickVisibility();
+        showScreen("screen-difficulty");
+      });
     });
   });
 
@@ -3466,8 +3490,9 @@
         updateWrongDifficultyVisibility(lastOpScreen);
       }
 
-      playSelectClick();
-      showScreen(DIFFICULTY_SCREENS[level - 1]);
+      playSelectClick(function () {
+        showScreen(DIFFICULTY_SCREENS[level - 1]);
+      });
     });
   });
 
@@ -3484,8 +3509,9 @@
         updateWrongDifficultyVisibility(lastOpScreen);
       }
 
-      playSelectClick();
-      showScreen(targetScreen);
+      playSelectClick(function () {
+        showScreen(targetScreen);
+      });
     });
   });
 
@@ -3505,8 +3531,9 @@
         lastOpScreen === "screen-multiply" ||
         lastOpScreen === "screen-divide"
       ) {
-        playGoClick();
-        startQuiz(lastOpScreen, digits);
+        playGoClick(function () {
+          startQuiz(lastOpScreen, digits);
+        });
       }
     });
   });
