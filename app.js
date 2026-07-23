@@ -2114,7 +2114,7 @@
       fightingBadge.src = QUIZ_BADGE_IMAGES.fighting;
     }
 
-    if (retryBadge) {
+    if (retryBadge && retryBadge.tagName === "IMG") {
       retryBadge.src = QUIZ_BADGE_IMAGES.retry;
     }
 
