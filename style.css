@@ -737,15 +737,18 @@ select,
 
 .op-screen .difficulty-exit {
   margin-top: auto;
-  padding-top: 6px;
+  padding-top: 2px;
+  padding-bottom: 0;
+  margin-bottom: -8px;
 }
 
 /* ===== 9번 화면 (어려움 정도) ===== */
 
 .difficulty-exit {
   margin-top: auto;
-  padding-top: 6px;
-  padding-bottom: 8px;
+  padding-top: 2px;
+  padding-bottom: 0;
+  margin-bottom: -8px;
   text-align: center;
   flex-shrink: 0;
   white-space: normal;
@@ -1591,7 +1594,9 @@ select,
 #screen-quiz-wrong .difficulty-exit,
 #screen-quiz-correct .difficulty-exit {
   margin-top: auto;
-  padding-top: 4px;
+  padding-top: 2px;
+  padding-bottom: 0;
+  margin-bottom: -8px;
   flex-shrink: 0;
 }
 
@@ -1939,7 +1944,8 @@ select,
 
 .stats-exit {
   margin-top: auto;
-  padding-bottom: 8px;
+  padding-bottom: 0;
+  margin-bottom: -8px;
   flex-shrink: 0;
 }
 
