@@ -2832,6 +2832,7 @@
   var quizFireworksBurstTimer = null;
   var quizFireworksActive = false;
   var quizCorrectLaughAudio = null;
+  var quizCorrectLaughTimer = null;
 
   function getQuizCorrectLaughSrc() {
     var script = document.querySelector('script[src$="app.js"]');
@@ -2843,10 +2844,15 @@
   }
 
   function stopQuizCorrectLaugh() {
+    if (quizCorrectLaughTimer) {
+      clearTimeout(quizCorrectLaughTimer);
+      quizCorrectLaughTimer = null;
+    }
     if (!quizCorrectLaughAudio) {
       return;
     }
     quizCorrectLaughAudio.pause();
+    quizCorrectLaughAudio.loop = false;
     quizCorrectLaughAudio.currentTime = 0;
   }
 
@@ -2858,11 +2864,15 @@
       } else {
         quizCorrectLaughAudio.src = getQuizCorrectLaughSrc();
       }
+      quizCorrectLaughAudio.loop = true;
       quizCorrectLaughAudio.currentTime = 0;
       var playPromise = quizCorrectLaughAudio.play();
       if (playPromise && typeof playPromise.catch === "function") {
         playPromise.catch(function () {});
       }
+      quizCorrectLaughTimer = setTimeout(function () {
+        stopQuizCorrectLaugh();
+      }, 5000);
     } catch (error) {}
   }
 
