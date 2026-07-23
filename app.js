@@ -659,7 +659,7 @@
   var QUIZ_BADGE_IMAGES = {
     fighting: "https://i.ibb.co/FLGPW7C5/image.png",
     retry: "https://i.ibb.co/jvV677LC/Asset-2.png",
-    retryAlt: "https://i.ibb.co/W4S13Jjn/Asset-3.png",
+    retryAlt: "https://i.ibb.co/ymBhFsfS/Asset-1.png",
     good: "https://i.ibb.co/LdLKjWRR/good.png"
   };
   var DIVIDE_LAYOUT = {
