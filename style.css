@@ -748,6 +748,8 @@ select,
   padding-bottom: 8px;
   text-align: center;
   flex-shrink: 0;
+  white-space: normal;
+  line-height: 1.4;
 }
 
 .difficulty-exit button {
