@@ -2824,15 +2824,51 @@
     showScreen("screen-quiz-correct");
     setTimeout(function () {
       playQuizFireworks();
+      playQuizCorrectLaugh();
     }, 60);
   }
 
   var quizFireworksFrame = null;
   var quizFireworksBurstTimer = null;
   var quizFireworksActive = false;
+  var quizCorrectLaughAudio = null;
+
+  function getQuizCorrectLaughSrc() {
+    var script = document.querySelector('script[src$="app.js"]');
+    var src = script ? script.getAttribute("src") : "";
+    if (src === "app.js") {
+      return "baby-laugh.mp3";
+    }
+    return "sounds/baby-laugh.mp3";
+  }
+
+  function stopQuizCorrectLaugh() {
+    if (!quizCorrectLaughAudio) {
+      return;
+    }
+    quizCorrectLaughAudio.pause();
+    quizCorrectLaughAudio.currentTime = 0;
+  }
+
+  function playQuizCorrectLaugh() {
+    try {
+      stopQuizCorrectLaugh();
+      if (!quizCorrectLaughAudio) {
+        quizCorrectLaughAudio = new Audio(getQuizCorrectLaughSrc());
+      } else {
+        quizCorrectLaughAudio.src = getQuizCorrectLaughSrc();
+      }
+      quizCorrectLaughAudio.currentTime = 0;
+      var playPromise = quizCorrectLaughAudio.play();
+      if (playPromise && typeof playPromise.catch === "function") {
+        playPromise.catch(function () {});
+      }
+    } catch (error) {}
+  }
 
   function stopQuizFireworks() {
     quizFireworksActive = false;
+    stopQuizCorrectLaugh();
 
     if (quizFireworksFrame) {
       cancelAnimationFrame(quizFireworksFrame);
