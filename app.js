@@ -2887,60 +2887,6 @@
     return getQuizAssetSrc("wrong-bgm.mp3", "sounds/wrong-bgm.mp3");
   }
 
-  function getSelectClickSrc() {
-    return getQuizAssetSrc("select-click.mp3", "sounds/select-click.mp3");
-  }
-
-  function getGoClickSrc() {
-    return getQuizAssetSrc("go-click.wav", "sounds/go-click.wav");
-  }
-
-  var selectClickAudio = null;
-  var goClickAudio = null;
-
-  function ensureClickAudio(existing, src) {
-    if (existing) {
-      return existing;
-    }
-    var audio = new Audio(src);
-    audio.preload = "auto";
-    audio.load();
-    return audio;
-  }
-
-  function playPreparedClick(baseAudio, afterPlay) {
-    if (!baseAudio) {
-      if (typeof afterPlay === "function") {
-        afterPlay();
-      }
-      return;
-    }
-    try {
-      var sfx = baseAudio.cloneNode(true);
-      sfx.currentTime = 0;
-      var playPromise = sfx.play();
-      if (playPromise && typeof playPromise.catch === "function") {
-        playPromise.catch(function () {});
-      }
-    } catch (error) {}
-    if (typeof afterPlay === "function") {
-      setTimeout(afterPlay, 30);
-    }
-  }
-
-  function playSelectClick(afterPlay) {
-    selectClickAudio = ensureClickAudio(selectClickAudio, getSelectClickSrc());
-    playPreparedClick(selectClickAudio, afterPlay);
-  }
-
-  function playGoClick(afterPlay) {
-    goClickAudio = ensureClickAudio(goClickAudio, getGoClickSrc());
-    playPreparedClick(goClickAudio, afterPlay);
-  }
-
-  selectClickAudio = ensureClickAudio(null, getSelectClickSrc());
-  goClickAudio = ensureClickAudio(null, getGoClickSrc());
-
   function stopQuizWrongBgm() {
     if (!quizWrongBgmAudio) {
       return;
@@ -3405,27 +3351,19 @@
   });
 
   pickPlusBtn.addEventListener("click", function () {
-    playSelectClick(function () {
-      showScreen("screen-add");
-    });
+    showScreen("screen-add");
   });
 
   pickMinusBtn.addEventListener("click", function () {
-    playSelectClick(function () {
-      showScreen("screen-subtract");
-    });
+    showScreen("screen-subtract");
   });
 
   pickMultiplyBtn.addEventListener("click", function () {
-    playSelectClick(function () {
-      showScreen("screen-multiply");
-    });
+    showScreen("screen-multiply");
   });
 
   pickDivideBtn.addEventListener("click", function () {
-    playSelectClick(function () {
-      showScreen("screen-divide");
-    });
+    showScreen("screen-divide");
   });
 
   document.querySelectorAll(".exit-to-login-btn").forEach(function (btn) {
@@ -3442,9 +3380,7 @@
 
   document.querySelectorAll("[data-op-screen]").forEach(function (btn) {
     btn.addEventListener("click", function () {
-      playSelectClick(function () {
-        showScreen(btn.getAttribute("data-op-screen"));
-      });
+      showScreen(btn.getAttribute("data-op-screen"));
     });
   });
 
@@ -3465,16 +3401,12 @@
           return;
         }
 
-        playGoClick(function () {
-          showScreen("screen-difficulty");
-        });
+        showScreen("screen-difficulty");
         return;
       }
 
-      playGoClick(function () {
-        resetDifficultyPickVisibility();
-        showScreen("screen-difficulty");
-      });
+      resetDifficultyPickVisibility();
+      showScreen("screen-difficulty");
     });
   });
 
@@ -3490,9 +3422,7 @@
         updateWrongDifficultyVisibility(lastOpScreen);
       }
 
-      playSelectClick(function () {
-        showScreen(DIFFICULTY_SCREENS[level - 1]);
-      });
+      showScreen(DIFFICULTY_SCREENS[level - 1]);
     });
   });
 
@@ -3509,9 +3439,7 @@
         updateWrongDifficultyVisibility(lastOpScreen);
       }
 
-      playSelectClick(function () {
-        showScreen(targetScreen);
-      });
+      showScreen(targetScreen);
     });
   });
 
@@ -3531,9 +3459,7 @@
         lastOpScreen === "screen-multiply" ||
         lastOpScreen === "screen-divide"
       ) {
-        playGoClick(function () {
-          startQuiz(lastOpScreen, digits);
-        });
+        startQuiz(lastOpScreen, digits);
       }
     });
   });
