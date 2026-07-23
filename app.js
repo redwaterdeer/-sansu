@@ -2871,9 +2871,10 @@
   var quizWrongBgmAudio = null;
 
   function getQuizAssetSrc(flatName, nestedPath) {
-    var script = document.querySelector('script[src$="app.js"]');
+    var script = document.querySelector('script[src*="app.js"]');
     var src = script ? script.getAttribute("src") : "";
-    if (src === "app.js") {
+    var path = String(src || "").split("?")[0];
+    if (path === "app.js") {
       return flatName;
     }
     return nestedPath;
