@@ -58,6 +58,10 @@
     return name === MASTER_ACCOUNT.name && password === MASTER_ACCOUNT.password;
   }
 
+  var screenHistory = [];
+  var currentScreenId = "screen-1";
+  var suppressScreenHistory = false;
+
   function showScreen(screenId) {
     var screens = document.querySelectorAll(".phone");
     screens.forEach(function (screen) {
@@ -76,6 +80,32 @@
       stopRetryBadgeSwap();
       stopQuizWrongBgm();
     }
+    if (!suppressScreenHistory && currentScreenId && currentScreenId !== screenId) {
+      screenHistory.push(currentScreenId);
+    }
+    suppressScreenHistory = false;
+    currentScreenId = screenId;
+  }
+
+  function goToPreviousScreen() {
+    var prev = null;
+
+    while (screenHistory.length > 0) {
+      prev = screenHistory.pop();
+      if (prev && prev !== currentScreenId) {
+        break;
+      }
+      prev = null;
+    }
+
+    if (!prev) {
+      goToHomeScreen();
+      return;
+    }
+
+    stopQuizFireworks();
+    suppressScreenHistory = true;
+    showScreen(prev);
   }
 
   function goToLoginScreen() {
@@ -92,12 +122,15 @@
     currentUserName = "";
     isCurrentUserMaster = false;
     updateScreen2Exit();
+    screenHistory = [];
     showScreen("screen-1");
   }
 
   function goToHomeScreen() {
     resetMenuTransition();
     updateScreen2Exit();
+    stopQuizFireworks();
+    screenHistory = [];
     showScreen("screen-2");
   }
 
@@ -3339,6 +3372,10 @@
 
   document.querySelectorAll(".exit-to-home-btn").forEach(function (btn) {
     btn.addEventListener("click", goToHomeScreen);
+  });
+
+  document.querySelectorAll(".exit-to-prev-btn").forEach(function (btn) {
+    btn.addEventListener("click", goToPreviousScreen);
   });
 
   document.querySelectorAll("[data-op-screen]").forEach(function (btn) {
