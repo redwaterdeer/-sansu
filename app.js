@@ -2864,15 +2864,12 @@
       } else {
         quizCorrectLaughAudio.src = getQuizCorrectLaughSrc();
       }
-      quizCorrectLaughAudio.loop = true;
+      quizCorrectLaughAudio.loop = false;
       quizCorrectLaughAudio.currentTime = 0;
       var playPromise = quizCorrectLaughAudio.play();
       if (playPromise && typeof playPromise.catch === "function") {
         playPromise.catch(function () {});
       }
-      quizCorrectLaughTimer = setTimeout(function () {
-        stopQuizCorrectLaugh();
-      }, 5000);
     } catch (error) {}
   }
 
@@ -2908,7 +2905,7 @@
     var dpr;
     var ctx;
     var particles = [];
-    var colors = ["#ff1a1a", "#ff4500", "#ffb300", "#00c9b7", "#ff1493", "#ffe600", "#ffffff"];
+    var colors = ["#ff0000", "#ff2a00", "#ff9900", "#00ffcc", "#ff0099", "#ffdd00", "#00aaff"];
     var burstInterval = 380;
     var width;
     var height;
