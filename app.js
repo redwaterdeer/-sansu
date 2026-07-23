@@ -71,8 +71,10 @@
     updatePhoneScale();
     if (screenId === "screen-quiz-wrong") {
       startRetryBadgeSwap();
+      playQuizWrongBgm();
     } else {
       stopRetryBadgeSwap();
+      stopQuizWrongBgm();
     }
   }
 
@@ -2833,14 +2835,49 @@
   var quizFireworksActive = false;
   var quizCorrectLaughAudio = null;
   var quizCorrectLaughTimer = null;
+  var quizWrongBgmAudio = null;
 
-  function getQuizCorrectLaughSrc() {
+  function getQuizAssetSrc(flatName, nestedPath) {
     var script = document.querySelector('script[src$="app.js"]');
     var src = script ? script.getAttribute("src") : "";
     if (src === "app.js") {
-      return "correct-chime.mp3";
+      return flatName;
     }
-    return "sounds/correct-chime.mp3";
+    return nestedPath;
+  }
+
+  function getQuizCorrectLaughSrc() {
+    return getQuizAssetSrc("correct-chime.mp3", "sounds/correct-chime.mp3");
+  }
+
+  function getQuizWrongBgmSrc() {
+    return getQuizAssetSrc("wrong-bgm.mp3", "sounds/wrong-bgm.mp3");
+  }
+
+  function stopQuizWrongBgm() {
+    if (!quizWrongBgmAudio) {
+      return;
+    }
+    quizWrongBgmAudio.pause();
+    quizWrongBgmAudio.loop = false;
+    quizWrongBgmAudio.currentTime = 0;
+  }
+
+  function playQuizWrongBgm() {
+    try {
+      stopQuizWrongBgm();
+      if (!quizWrongBgmAudio) {
+        quizWrongBgmAudio = new Audio(getQuizWrongBgmSrc());
+      } else {
+        quizWrongBgmAudio.src = getQuizWrongBgmSrc();
+      }
+      quizWrongBgmAudio.loop = false;
+      quizWrongBgmAudio.currentTime = 0;
+      var playPromise = quizWrongBgmAudio.play();
+      if (playPromise && typeof playPromise.catch === "function") {
+        playPromise.catch(function () {});
+      }
+    } catch (error) {}
   }
 
   function stopQuizCorrectLaugh() {
