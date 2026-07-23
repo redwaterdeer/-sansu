@@ -2887,6 +2887,43 @@
     return getQuizAssetSrc("wrong-bgm.mp3", "sounds/wrong-bgm.mp3");
   }
 
+  function getSelectClickSrc() {
+    return getQuizAssetSrc("select-click.mp3", "sounds/select-click.mp3");
+  }
+
+  function getGoClickSrc() {
+    return getQuizAssetSrc("go-click.mp3", "sounds/go-click.mp3");
+  }
+
+  var selectClickAudio = null;
+  var goClickAudio = null;
+
+  function playSelectClick() {
+    try {
+      if (!selectClickAudio) {
+        selectClickAudio = new Audio(getSelectClickSrc());
+      }
+      selectClickAudio.currentTime = 0;
+      var playPromise = selectClickAudio.play();
+      if (playPromise && typeof playPromise.catch === "function") {
+        playPromise.catch(function () {});
+      }
+    } catch (error) {}
+  }
+
+  function playGoClick() {
+    try {
+      if (!goClickAudio) {
+        goClickAudio = new Audio(getGoClickSrc());
+      }
+      goClickAudio.currentTime = 0;
+      var playPromise = goClickAudio.play();
+      if (playPromise && typeof playPromise.catch === "function") {
+        playPromise.catch(function () {});
+      }
+    } catch (error) {}
+  }
+
   function stopQuizWrongBgm() {
     if (!quizWrongBgmAudio) {
       return;
@@ -3351,18 +3388,22 @@
   });
 
   pickPlusBtn.addEventListener("click", function () {
+    playSelectClick();
     showScreen("screen-add");
   });
 
   pickMinusBtn.addEventListener("click", function () {
+    playSelectClick();
     showScreen("screen-subtract");
   });
 
   pickMultiplyBtn.addEventListener("click", function () {
+    playSelectClick();
     showScreen("screen-multiply");
   });
 
   pickDivideBtn.addEventListener("click", function () {
+    playSelectClick();
     showScreen("screen-divide");
   });
 
@@ -3380,6 +3421,7 @@
 
   document.querySelectorAll("[data-op-screen]").forEach(function (btn) {
     btn.addEventListener("click", function () {
+      playSelectClick();
       showScreen(btn.getAttribute("data-op-screen"));
     });
   });
@@ -3401,10 +3443,12 @@
           return;
         }
 
+        playGoClick();
         showScreen("screen-difficulty");
         return;
       }
 
+      playGoClick();
       resetDifficultyPickVisibility();
       showScreen("screen-difficulty");
     });
@@ -3422,6 +3466,7 @@
         updateWrongDifficultyVisibility(lastOpScreen);
       }
 
+      playSelectClick();
       showScreen(DIFFICULTY_SCREENS[level - 1]);
     });
   });
@@ -3439,6 +3484,7 @@
         updateWrongDifficultyVisibility(lastOpScreen);
       }
 
+      playSelectClick();
       showScreen(targetScreen);
     });
   });
@@ -3459,6 +3505,7 @@
         lastOpScreen === "screen-multiply" ||
         lastOpScreen === "screen-divide"
       ) {
+        playGoClick();
         startQuiz(lastOpScreen, digits);
       }
     });
