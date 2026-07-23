@@ -2838,9 +2838,9 @@
     var script = document.querySelector('script[src$="app.js"]');
     var src = script ? script.getAttribute("src") : "";
     if (src === "app.js") {
-      return "baby-laugh.mp3";
+      return "correct-chime.mp3";
     }
-    return "sounds/baby-laugh.mp3";
+    return "sounds/correct-chime.mp3";
   }
 
   function stopQuizCorrectLaugh() {
