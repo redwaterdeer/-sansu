@@ -658,7 +658,8 @@
   };
   var QUIZ_BADGE_IMAGES = {
     fighting: "https://i.ibb.co/FLGPW7C5/image.png",
-    retry: "https://i.ibb.co/mrzhsPyy/image.png",
+    retry: "https://i.ibb.co/jvV677LC/Asset-2.png",
+    retryAlt: "https://i.ibb.co/W4S13Jjn/Asset-3.png",
     good: "https://i.ibb.co/LdLKjWRR/good.png"
   };
   var DIVIDE_LAYOUT = {
@@ -2129,16 +2130,7 @@
   }
 
   var retryBadgeSwapTimer = null;
-  var retryBadgeSwapFrames = null;
   var retryBadgeSwapIndex = 0;
-
-  function hexToRgb(hex) {
-    return [
-      parseInt(hex.slice(1, 3), 16),
-      parseInt(hex.slice(3, 5), 16),
-      parseInt(hex.slice(5, 7), 16)
-    ];
-  }
 
   function stopRetryBadgeSwap() {
     if (retryBadgeSwapTimer) {
@@ -2147,126 +2139,21 @@
     }
   }
 
-  function buildRetryBadgeFrames(src, done) {
-    var colorA = hexToRgb("#f76c57");
-    var colorB = hexToRgb("#222fe8");
-    var image = new Image();
-
-    image.crossOrigin = "anonymous";
-    image.onload = function () {
-      try {
-        var canvas = document.createElement("canvas");
-        var ctx = canvas.getContext("2d");
-        var width = image.naturalWidth || image.width;
-        var height = image.naturalHeight || image.height;
-        var source;
-        var pixels;
-        var luminances = [];
-        var i;
-        var lum;
-        var mid;
-        var lowCount = 0;
-        var highCount = 0;
-        var lowIsBg;
-
-        canvas.width = width;
-        canvas.height = height;
-        ctx.drawImage(image, 0, 0);
-        source = ctx.getImageData(0, 0, width, height);
-        pixels = source.data;
-
-        for (i = 0; i < pixels.length; i += 4) {
-          if (pixels[i + 3] < 128) {
-            continue;
-          }
-          luminances.push(0.299 * pixels[i] + 0.587 * pixels[i + 1] + 0.114 * pixels[i + 2]);
-        }
-
-        if (!luminances.length) {
-          done(null);
-          return;
-        }
-
-        luminances.sort(function (a, b) {
-          return a - b;
-        });
-        mid = luminances[Math.floor(luminances.length / 2)];
-
-        for (i = 0; i < luminances.length; i += 1) {
-          if (luminances[i] < mid) {
-            lowCount += 1;
-          } else {
-            highCount += 1;
-          }
-        }
-        lowIsBg = lowCount >= highCount;
-
-        function makeFrame(bg, text) {
-          var frame = ctx.createImageData(width, height);
-          var out = frame.data;
-          var target;
-
-          for (i = 0; i < pixels.length; i += 4) {
-            out[i + 3] = pixels[i + 3];
-            if (pixels[i + 3] < 128) {
-              out[i] = 0;
-              out[i + 1] = 0;
-              out[i + 2] = 0;
-              continue;
-            }
-
-            lum = 0.299 * pixels[i] + 0.587 * pixels[i + 1] + 0.114 * pixels[i + 2];
-            target = (lum < mid) === lowIsBg ? bg : text;
-            out[i] = target[0];
-            out[i + 1] = target[1];
-            out[i + 2] = target[2];
-          }
-
-          ctx.putImageData(frame, 0, 0);
-          return canvas.toDataURL("image/png");
-        }
-
-        done([makeFrame(colorA, colorB), makeFrame(colorB, colorA)]);
-      } catch (error) {
-        done(null);
-      }
-    };
-    image.onerror = function () {
-      done(null);
-    };
-    image.src = src;
-  }
-
   function startRetryBadgeSwap() {
     var badge = document.querySelector("#screen-quiz-wrong .quiz-badge-img--retry");
+    var frames = [QUIZ_BADGE_IMAGES.retry, QUIZ_BADGE_IMAGES.retryAlt];
 
     stopRetryBadgeSwap();
     if (!badge) {
       return;
     }
 
-    function runFrames(frames) {
-      retryBadgeSwapFrames = frames;
-      retryBadgeSwapIndex = 0;
-      badge.src = frames[0];
-      retryBadgeSwapTimer = setInterval(function () {
-        retryBadgeSwapIndex = retryBadgeSwapIndex === 0 ? 1 : 0;
-        badge.src = retryBadgeSwapFrames[retryBadgeSwapIndex];
-      }, 250);
-    }
-
-    if (retryBadgeSwapFrames) {
-      runFrames(retryBadgeSwapFrames);
-      return;
-    }
-
-    buildRetryBadgeFrames(QUIZ_BADGE_IMAGES.retry, function (frames) {
-      if (!frames) {
-        badge.src = QUIZ_BADGE_IMAGES.retry;
-        return;
-      }
-      runFrames(frames);
-    });
+    retryBadgeSwapIndex = 0;
+    badge.src = frames[0];
+    retryBadgeSwapTimer = setInterval(function () {
+      retryBadgeSwapIndex = retryBadgeSwapIndex === 0 ? 1 : 0;
+      badge.src = frames[retryBadgeSwapIndex];
+    }, 250);
   }
 
   function initDiffDigitBoxes() {
