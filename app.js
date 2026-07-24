@@ -69,7 +69,7 @@
       screen.classList.toggle("phone--hidden", !isTarget);
       screen.hidden = !isTarget;
     });
-    if (screenId !== "screen-1") {
+    if (screenId !== "screen-1" && screenId !== "screen-signup") {
       resetLoginKeyboardLift(false);
     }
     updatePhoneScale();
@@ -303,19 +303,61 @@
 
   var loginKeyboardLock = false;
   var lockedPhoneScale = null;
+  var lastUnlockedPhoneScale = 1;
 
   function isScreen1Visible() {
     var screen1 = document.getElementById("screen-1");
-    return screen1 && !screen1.hidden;
+    return !!(screen1 && !screen1.hidden && !screen1.classList.contains("phone--hidden"));
+  }
+
+  function isSignupScreenVisible() {
+    var screenSignup = document.getElementById("screen-signup");
+    return !!(
+      screenSignup &&
+      !screenSignup.hidden &&
+      !screenSignup.classList.contains("phone--hidden")
+    );
+  }
+
+  function isKeyboardLiftScreenVisible() {
+    return isScreen1Visible() || isSignupScreenVisible();
   }
 
   function isLoginInput(element) {
-    return (
+    var signupFormEl = document.getElementById("signup-form");
+
+    if (
       element &&
       loginForm &&
       loginForm.contains(element) &&
       (element.id === "login-name" || element.id === "login-secret")
+    ) {
+      return true;
+    }
+
+    return !!(
+      element &&
+      signupFormEl &&
+      signupFormEl.contains(element) &&
+      (element.tagName === "INPUT") &&
+      (element.id === "signup-name" ||
+        element.id === "signup-password" ||
+        element.id === "signup-motto")
     );
+  }
+
+  function lockPhoneScaleForKeyboard() {
+    if (loginKeyboardLock && lockedPhoneScale !== null) {
+      return;
+    }
+    loginKeyboardLock = true;
+    lockedPhoneScale = lastUnlockedPhoneScale;
+    if (!isFinite(lockedPhoneScale) || lockedPhoneScale <= 0) {
+      lockedPhoneScale =
+        parseFloat(
+          getComputedStyle(document.documentElement).getPropertyValue("--phone-scale")
+        ) || 1;
+    }
   }
 
   function getMaskedFieldValue(input) {
@@ -481,7 +523,7 @@
       return;
     }
 
-    var field = active.closest(".field");
+    var field = active.closest(".field, .signup-field");
     if (!field) {
       return;
     }
@@ -522,6 +564,14 @@
     var safeInsetX = 8;
     var safeInsetY = 20;
     var scale;
+    var active = document.activeElement;
+
+    if (isLoginInput(active) && isKeyboardLiftScreenVisible()) {
+      lockPhoneScaleForKeyboard();
+      document.documentElement.style.setProperty("--phone-scale", String(lockedPhoneScale));
+      alignLoginFieldForKeyboard();
+      return;
+    }
 
     if (loginKeyboardLock && lockedPhoneScale !== null) {
       document.documentElement.style.setProperty("--phone-scale", String(lockedPhoneScale));
@@ -537,6 +587,7 @@
       scale = 1;
     }
 
+    lastUnlockedPhoneScale = scale;
     document.documentElement.style.setProperty("--phone-scale", String(scale));
     refitVisibleQuizGrids();
   }
@@ -563,18 +614,18 @@
 
   function setupLoginKeyboardLift() {
     var inputs = loginForm.querySelectorAll("#login-name, #login-secret");
+    var signupFormEl = document.getElementById("signup-form");
+    var signupInputs = signupFormEl
+      ? signupFormEl.querySelectorAll("#signup-name, #signup-password, #signup-motto")
+      : [];
 
-    inputs.forEach(function (input) {
+    function bindKeyboardLift(input, isVisible) {
       input.addEventListener("focus", function () {
-        if (!isScreen1Visible()) {
+        if (!isVisible()) {
           return;
         }
 
-        loginKeyboardLock = true;
-        lockedPhoneScale =
-          parseFloat(
-            getComputedStyle(document.documentElement).getPropertyValue("--phone-scale")
-          ) || 1;
+        lockPhoneScaleForKeyboard();
         // 키보드가 실제로 열린 뒤(visualViewport resize)에만 올림 →
         // 포커스 직후 transform 변경으로 키보드가 닫히는 것 방지
       });
@@ -588,6 +639,14 @@
           resetLoginKeyboardLift();
         }, 80);
       });
+    }
+
+    inputs.forEach(function (input) {
+      bindKeyboardLift(input, isScreen1Visible);
+    });
+
+    Array.prototype.forEach.call(signupInputs, function (input) {
+      bindKeyboardLift(input, isSignupScreenVisible);
     });
   }
 
